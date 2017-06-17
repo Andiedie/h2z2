@@ -1,0 +1,8 @@
+{
+  "ignore": ["node_modules/", "logs/", ".git"],
+  "stdout": true,
+  "ext": "js json",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
