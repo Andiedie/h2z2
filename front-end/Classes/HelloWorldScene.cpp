@@ -1,5 +1,4 @@
 #include "HelloWorldScene.h"
-#include "network\SocketIO.h"
 #include "utils\global.h"
 
 USING_NS_CC;
@@ -33,6 +32,14 @@ bool HelloWorld::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto client = GSocket;
+	client->onConnection([=]() {
+		Document dom;
+		dom.SetObject();
+		rapidjson::Value ok;
+		ok.SetString("123");
+		dom.AddMember("ok", ok, dom.GetAllocator());
+		client->emit("message", dom);
+	});
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program

@@ -18,6 +18,7 @@ GameSocket::GameSocket() {
 
 void GameSocket::onOpen(WebSocket* ws) {
 	CCLOG("GameSocket: open");
+	if (connectionCallback) connectionCallback();
 }
 
 void GameSocket::onError(WebSocket* ws, const WebSocket::ErrorCode &code) {
@@ -30,4 +31,21 @@ void GameSocket::onMessage(WebSocket* ws, const WebSocket::Data &data) {
 
 void GameSocket::onClose(WebSocket* ws) {
 	CCLOG("GameSocket: close");
+}
+
+void GameSocket::emit(const std::string& eventName, Document& dom) {
+	Document toSend;
+	toSend.SetObject();
+	auto& allocator = toSend.GetAllocator();
+	toSend.AddMember("event", rapidjson::Value().SetString(eventName.c_str(), allocator), allocator);
+	toSend.AddMember("data", dom, toSend.GetAllocator());
+	StringBuffer buffer;
+	Writer<StringBuffer> writer(buffer);
+	toSend.Accept(writer);
+	CCLOG(buffer.GetString());
+	socket->send(buffer.GetString());
+}
+
+void GameSocket::onConnection(std::function<void()> fn) {
+	connectionCallback = fn;
 }
