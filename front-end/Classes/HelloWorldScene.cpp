@@ -1,4 +1,6 @@
 #include "HelloWorldScene.h"
+#include "network\SocketIO.h"
+#include "utils\global.h"
 
 USING_NS_CC;
 
@@ -29,6 +31,8 @@ bool HelloWorld::init()
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	auto client = GSocket;
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
