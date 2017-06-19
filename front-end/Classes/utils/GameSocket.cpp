@@ -54,8 +54,10 @@ void GameSocket::onConnection(std::function<void(GameSocket*)> fn) {
 }
 
 void GameSocket::on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn) {
-	// not replacing
-	eventPool.insert(std::make_pair(eventName, fn));
+	// with replacing
+	auto it = eventPool.find(eventName);
+	if (it != eventPool.end()) it->second = fn;
+	else eventPool.insert(std::make_pair(eventName, fn));
 }
 
 void GameSocket::removeEventHandler(const std::string& eventName) {

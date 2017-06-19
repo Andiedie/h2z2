@@ -36,7 +36,9 @@ bool WaitingHall::init()
 
 	});
 
-	auto menu = Menu::create();
+	client->on("error", [](GameSocket* client, Document& dom) {
+		CCLOG("manual-error: %s", dom["data"].GetString());
+	});
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
 	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2);
@@ -45,8 +47,21 @@ bool WaitingHall::init()
 	client->on("playerList", [=](GameSocket* client, Document& dom) {
 		playerLabel->setString(dom["data"].GetString());
 	});
+	client->on("gameStart", [=](GameSocket* client, Document& dom) {
+		CCLOG("game start!");
+		// switch to game scene
+	});
+
+	auto menu = Menu::create();
+	menu->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 200.0f);
+	auto startGameButton = MenuItemFont::create("START", [=](Ref* sender) {
+		CCLOG("clicked");
+		client->sendEvent("requireGameStart");
+	});
+	menu->addChild(startGameButton);
 
 	this->addChild(playerLabel, 1);
+	this->addChild(menu, 2);
 
     return true;
 }

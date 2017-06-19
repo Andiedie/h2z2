@@ -28,6 +28,7 @@ public:
 	void sendEvent(const std::string& eventName, Document& dom = Document());
 	void on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn);
 	void removeEventHandler(const std::string& eventName);
+
 	void onConnection(std::function<void(GameSocket*)> fn);
 };
 

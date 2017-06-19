@@ -41,4 +41,8 @@ module.exports = class Player extends EventEmitter {
       data
     }));
   }
+
+  sendError (message) {
+    this.sendEvent('error', message);
+  }
 };

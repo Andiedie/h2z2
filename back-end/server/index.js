@@ -24,9 +24,14 @@ module.exports = class Server extends EventEmitter {
   onConnection (ws) {
     const player = new Player(ws);
     for (const [eventName, handler] of Object.entries(events)) {
-      player.on(eventName, handler.bind(null, this));
+      player.on(eventName, (...args) => {
+        try {
+          handler(this, ...args);
+        } catch (err) {
+          player.sendError(err.stack);
+        }
+      });
     }
-    this.playerPool.add(player);
   }
 
   broadcast (eventName, obj, except = null) {
