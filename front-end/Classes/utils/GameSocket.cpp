@@ -38,7 +38,7 @@ void GameSocket::onClose(WebSocket* ws) {
 	CCLOG("GameSocket: close");
 }
 
-void GameSocket::emit(const std::string& eventName, Document& dom) {
+void GameSocket::sendEvent(const std::string& eventName, Document& dom) {
 	Document toSend;
 	toSend.SetObject();
 	auto& allocator = toSend.GetAllocator();
@@ -56,6 +56,10 @@ void GameSocket::onConnection(std::function<void(GameSocket*)> fn) {
 void GameSocket::on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn) {
 	// not replacing
 	eventPool.insert(std::make_pair(eventName, fn));
+}
+
+void GameSocket::removeEventHandler(const std::string& eventName) {
+	eventPool.erase(eventName);
 }
 
 std::string stringifyDom(const Document& dom) {

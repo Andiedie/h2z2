@@ -3,53 +3,35 @@ const {EventEmitter} = require('events');
 const WebSocket = require('ws');
 const {webSocket: config} = require('../config');
 
+const Player = require('./Player');
 const events = require('./events');
 
 module.exports = class Server extends EventEmitter {
   constructor () {
     super();
     this.playerPool = new Set();
+    this.game = {
+      started: false
+    };
 
     this.server = new WebSocket.Server({
       port: config.port
     });
 
     this.server.on('connection', this.onConnection.bind(this));
-
-    for (const [event, handler] of Object.entries(events)) {
-      this.on(event, handler.bind(this));
-    }
   }
 
   onConnection (ws) {
-    console.log('new player!');
-    this.playerPool.add(ws);
-
-    ws.on('message', message => {
-      console.log('message');
-      console.log(message);
-      const obj = JSON.parse(message);
-      const event = obj.event || 'message';
-      this.emit(event, obj.data);
-    });
-
-    setTimeout(() => {
-      emit(ws, 'gamestart', {
-        time: new Date()
-      });
-    }, 2000);
+    const player = new Player(ws);
+    for (const [eventName, handler] of Object.entries(events)) {
+      player.on(eventName, handler.bind(null, this));
+    }
+    this.playerPool.add(player);
   }
 
   broadcast (eventName, obj) {
-    for (const socket of this.playerPool) {
-      emit(socket, eventName, obj);
+    for (const player of this.playerPool) {
+      player.sendEvent(eventName, obj);
     }
   }
 };
-
-function emit (socket, eventName, obj) {
-  socket.send(JSON.stringify({
-    event: eventName,
-    data: obj
-  }));
-}

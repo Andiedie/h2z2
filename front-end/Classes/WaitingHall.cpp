@@ -1,15 +1,15 @@
-#include "HelloWorldScene.h"
+#include "WaitingHall.h"
 #include "utils\global.h"
 
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+Scene* WaitingHall::createScene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
     
     // 'layer' is an autorelease object
-    auto layer = HelloWorld::create();
+    auto layer = WaitingHall::create();
 
     // add layer as a child to scene
     scene->addChild(layer);
@@ -19,7 +19,7 @@ Scene* HelloWorld::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool WaitingHall::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -33,14 +33,9 @@ bool HelloWorld::init()
 
 	auto client = GSocket;
 	client->onConnection([](GameSocket* client) {
-		Document dom;
-		dom.SetObject();
-		rapidjson::Value ok;
-		ok.SetString("123");
-		dom.AddMember("ok", ok, dom.GetAllocator());
-		client->emit("message", dom);
+		client->sendEvent("gameStart", Document());
 	});
-	client->on("gamestart", [](GameSocket* client, Document &dom) {
+	client->on("gameStart", [](GameSocket* client, Document &dom) {
 		CCLOG("gamestart: %s", stringifyDom(dom).c_str());
 	});
 
@@ -52,7 +47,7 @@ bool HelloWorld::init()
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+                                           CC_CALLBACK_1(WaitingHall::menuCloseCallback, this));
     
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
@@ -90,7 +85,7 @@ bool HelloWorld::init()
 }
 
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void WaitingHall::menuCloseCallback(Ref* pSender)
 {
     Director::getInstance()->end();
 
