@@ -1,4 +1,5 @@
 #include "WaitingHall.h"
+#include "GameScene.h"
 #include "utils\global.h"
 
 USING_NS_CC;
@@ -50,6 +51,7 @@ bool WaitingHall::init()
 	client->on("gameStart", [=](GameSocket* client, Document& dom) {
 		CCLOG("game start!");
 		// switch to game scene
+		Director::getInstance()->pushScene(GameScene::createScene());
 	});
 
 	auto menu = Menu::create();
