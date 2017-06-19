@@ -23,7 +23,6 @@ module.exports = class Server extends EventEmitter {
 
   onConnection (ws) {
     console.log('new player!');
-    ws.send('bello!');
     this.playerPool.add(ws);
 
     ws.on('message', message => {
@@ -33,6 +32,12 @@ module.exports = class Server extends EventEmitter {
       const event = obj.event || 'message';
       this.emit(event, obj.data);
     });
+
+    setTimeout(() => {
+      emit(ws, 'gamestart', {
+        time: new Date()
+      });
+    }, 2000);
   }
 
   broadcast (eventName, obj) {

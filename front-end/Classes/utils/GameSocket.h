@@ -4,6 +4,7 @@
 #include "cocos2d\external\json\document.h"
 #include "cocos2d\external\json\writer.h"
 #include "cocos2d\external\json\stringbuffer.h"
+#include "cocos2d\external\json\rapidjson.h"
 #include <functional>
 #include <map>
 
@@ -13,8 +14,8 @@ using namespace rapidjson;
 class GameSocket : public WebSocket::Delegate {
 	static GameSocket* instance;
 	WebSocket* socket;
-	std::map<std::string, std::function<void(Document&)>> eventPool;
-	std::function<void()> connectionCallback;
+	std::map<std::string, std::function<void(GameSocket*, Document&)>> eventPool;
+	std::function<void(GameSocket*)> connectionCallback;
 
 	GameSocket();
 	void onOpen(WebSocket* ws) override;
@@ -25,8 +26,10 @@ public:
 	static GameSocket* getInstance();
 
 	void emit(const std::string& eventName, Document& dom);
-	void on(const std::string& eventName, std::function<void(Document&)> fn);
-	void onConnection(std::function<void()> fn);
+	void on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn);
+	void onConnection(std::function<void(GameSocket*)> fn);
 };
+
+std::string stringifyDom(const Document& dom);
 
 #define GSocket GameSocket::getInstance()

@@ -32,13 +32,16 @@ bool HelloWorld::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto client = GSocket;
-	client->onConnection([=]() {
+	client->onConnection([](GameSocket* client) {
 		Document dom;
 		dom.SetObject();
 		rapidjson::Value ok;
 		ok.SetString("123");
 		dom.AddMember("ok", ok, dom.GetAllocator());
 		client->emit("message", dom);
+	});
+	client->on("gamestart", [](GameSocket* client, Document &dom) {
+		CCLOG("gamestart: %s", stringifyDom(dom).c_str());
 	});
 
     /////////////////////////////
