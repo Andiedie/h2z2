@@ -29,8 +29,9 @@ module.exports = class Server extends EventEmitter {
     this.playerPool.add(player);
   }
 
-  broadcast (eventName, obj) {
+  broadcast (eventName, obj, except = null) {
     for (const player of this.playerPool) {
+      if (player === except) continue;
       player.sendEvent(eventName, obj);
     }
   }

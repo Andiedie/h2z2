@@ -15,7 +15,9 @@ module.exports = class Player extends EventEmitter {
         const obj = JSON.parse(message);
         const event = obj.event || 'message';
         assert(obj.hasOwnProperty('data'), 'no prop [data]');
-        this.emit(event, this, obj.data);
+        if (!this.emit(event, this, obj.data)) {
+          console.error(`no such event handler: ${event}`);
+        }
       } catch (err) {
         // raw data
         this.emit('raw', this, message);
@@ -24,6 +26,12 @@ module.exports = class Player extends EventEmitter {
 
     webSocket.on('close', () => {
       console.log(`player ${this.id} disconnected`);
+      this.emit('logout', this);
+    });
+
+    // 在constructor后才绑定的事件
+    setImmediate(() => {
+      this.emit('login', this);
     });
   }
 

@@ -4,6 +4,13 @@ exports.raw = (server, player, message) => {
   console.log(`${player.id}: ${message}`);
 };
 
-exports.gameStart = (server, player, data) => {
-  console.log('gameStart!');
+exports.login = (server, player) => {
+  console.log(`player ${player.id} logged in`);
+  server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id).join('|'));
+};
+
+exports.logout = (server, player) => {
+  server.playerPool.delete(player);
+  console.log(`player ${player.id} logged out`);
+  server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id).join('|'));
 };
