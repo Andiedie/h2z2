@@ -14,7 +14,7 @@ module.exports = class Player extends EventEmitter {
       try {
         const obj = JSON.parse(message);
         const event = obj.event || 'message';
-        assert(obj.hasOwnProperty('data'), 'no prop [data]');
+        // assert(obj.hasOwnProperty('data'), 'no prop [data]');
         if (!this.emit(event, this, obj.data)) {
           console.error(`no such event handler: ${event}`);
         }

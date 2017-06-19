@@ -26,7 +26,7 @@ void GameSocket::onError(WebSocket* ws, const WebSocket::ErrorCode &code) {
 }
 
 void GameSocket::onMessage(WebSocket* ws, const WebSocket::Data &data) {
-	CCLOG("GameSocket: message %s", data.bytes);
+	// CCLOG("GameSocket: message %s", data.bytes);
 	Document dom;
 	dom.Parse(data.bytes);
 	std::string e = dom.HasMember("event") ? dom["event"].GetString() : "message";
@@ -45,7 +45,17 @@ void GameSocket::sendEvent(const std::string& eventName, Document& dom) {
 	toSend.AddMember("event", rapidjson::Value().SetString(eventName.c_str(), allocator), allocator);
 	toSend.AddMember("data", dom, allocator);
 	std::string str = stringifyDom(toSend);
-	CCLOG("stringified: %s", str.c_str());
+	// CCLOG("stringified: %s", str.c_str());
+	socket->send(str);
+}
+
+void GameSocket::sendEvent(const std::string& eventName) {
+	Document toSend;
+	toSend.SetObject();
+	auto& allocator = toSend.GetAllocator();
+	toSend.AddMember("event", rapidjson::Value().SetString(eventName.c_str(), allocator), allocator);
+	std::string str = stringifyDom(toSend);
+	// CCLOG("stringified: %s", str.c_str());
 	socket->send(str);
 }
 

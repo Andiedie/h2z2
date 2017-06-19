@@ -40,4 +40,15 @@ module.exports = class Server extends EventEmitter {
       player.sendEvent(eventName, obj);
     }
   }
+
+  // costy, be careful
+  broadcastMap (eventName, fn, except = null) {
+    const datas = Array.from(this.playerPool).map(player => fn(this, player));
+    let i = 0;
+    for (const player of this.playerPool) {
+      if (player === except) continue;
+      player.sendEvent(eventName, datas[i]);
+      i++;
+    }
+  }
 };

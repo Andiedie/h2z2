@@ -32,12 +32,11 @@ bool WaitingHall::init()
     this->visibleSize = Director::getInstance()->getVisibleSize();
     this->origin = Director::getInstance()->getVisibleOrigin();
 
-	auto client = GSocket;
-	client->onConnection([](GameSocket* client) {
+	GSocket->onConnection([](GameSocket* client) {
 
 	});
 
-	client->on("error", [](GameSocket* client, Document& dom) {
+	GSocket->on("error", [](GameSocket* client, Document& dom) {
 		CCLOG("manual-error: %s", dom["data"].GetString());
 	});
 
@@ -45,10 +44,10 @@ bool WaitingHall::init()
 	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	playerLabel->setString("this is label");
 
-	client->on("playerList", [=](GameSocket* client, Document& dom) {
+	GSocket->on("playerList", [=](GameSocket* client, Document& dom) {
 		playerLabel->setString(dom["data"].GetString());
 	});
-	client->on("gameStart", [=](GameSocket* client, Document& dom) {
+	GSocket->on("gameStart", [=](GameSocket* client, Document& dom) {
 		CCLOG("game start!");
 		// switch to game scene
 		Director::getInstance()->pushScene(GameScene::createScene());
@@ -58,7 +57,7 @@ bool WaitingHall::init()
 	menu->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 200.0f);
 	auto startGameButton = MenuItemFont::create("START", [=](Ref* sender) {
 		CCLOG("clicked");
-		client->sendEvent("requireGameStart");
+		GSocket->sendEvent("requireGameStart");
 	});
 	menu->addChild(startGameButton);
 

@@ -295,3 +295,4 @@ __pycache__/
 *.xsd.cs
 
 Debug.win32/
+Release.win32/

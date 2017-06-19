@@ -25,7 +25,8 @@ class GameSocket : public WebSocket::Delegate {
 public:
 	static GameSocket* getInstance();
 
-	void sendEvent(const std::string& eventName, Document& dom = Document());
+	void sendEvent(const std::string& eventName, Document& dom);
+	void sendEvent(const std::string& eventName);
 	void on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn);
 	void removeEventHandler(const std::string& eventName);
 
