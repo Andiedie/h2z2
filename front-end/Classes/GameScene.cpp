@@ -67,9 +67,10 @@ bool GameScene::init()
 	GSocket->on("sync", [=](GameSocket* client, Document& dom) {
 		auto& arr = dom["data"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
+			auto& data = arr[i]["data"];
+
 			// check ping
 			// milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-			auto& data = arr[i]["data"];
 			// CCLOG("ping: %lld", ms.count() - data["timestamp"].GetInt64());
 
 			const std::string& id = arr[i]["id"].GetString();
@@ -77,9 +78,7 @@ bool GameScene::init()
 			if (it == this->otherPlayers.end()) continue; // data of selfPlayer, just ignore it
 
 			auto player = it->second;
-			auto body = player->getPhysicsBody();
-			body->setVelocity(Vec2(data["speedX"].GetDouble(), data["speedY"].GetDouble()));
-			player->setPosition(data["posX"].GetDouble(), data["posY"].GetDouble());
+			syncSprite(player, data);
 		}
 	});
 
@@ -174,28 +173,35 @@ void resetPhysics(Node* node, PhysicsBody* body) {
 
 Sprite* createPlayer(const std::string& id) {
 	auto player = Sprite::create("player.png");
-	player->setScale(0.7f);
+	player->setScale(0.5f);
 	auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 	player->setPhysicsBody(playerBody);
 	return player;
 }
 
-Document createSyncData(Sprite* player) {
+Document createSyncData(Node* player) {
 	Document dom;
 	auto body = player->getPhysicsBody();
 	dom.SetObject();
+
+	// position & speed & angle
 	rapidjson::Value speedX, speedY, posX, posY;
 	auto speed = body->getVelocity();
 	auto pos = body->getPosition();
-	speedX.SetDouble(speed.x);
-	speedY.SetDouble(speed.y);
-	posX.SetDouble(pos.x);
-	posY.SetDouble(pos.y);
-	dom.AddMember("speedX", speedX, dom.GetAllocator());
-	dom.AddMember("speedY", speedY, dom.GetAllocator());
-	dom.AddMember("posX", posX, dom.GetAllocator());
-	dom.AddMember("posY", posY, dom.GetAllocator());
+	dom.AddMember("speedX", speed.x, dom.GetAllocator());
+	dom.AddMember("speedY", speed.y, dom.GetAllocator());
+	dom.AddMember("posX", pos.x, dom.GetAllocator());
+	dom.AddMember("posY", pos.y, dom.GetAllocator());
+	dom.AddMember("angle", player->getRotation(), dom.GetAllocator());
+
 	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	dom.AddMember("timestamp", ms.count(), dom.GetAllocator());	// used to check ping
 	return dom;
+}
+
+void syncSprite(Node* sprite, GenericValue<rapidjson::UTF8<>>& data) {
+	auto body = sprite->getPhysicsBody();
+	body->setVelocity(Vec2(data["speedX"].GetDouble(), data["speedY"].GetDouble()));
+	sprite->setPosition(data["posX"].GetDouble(), data["posY"].GetDouble());
+	sprite->setRotation(data["angle"].GetDouble());
 }

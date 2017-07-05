@@ -40,4 +40,5 @@ void setSpeedX(Node*, float);
 void setSpeedY(Node*, float);
 void resetPhysics(Node*, PhysicsBody*);
 Sprite* createPlayer(const std::string& id = "");
-Document createSyncData(Sprite*);
+Document createSyncData(Node*);
+void syncSprite(Node*, GenericValue<rapidjson::UTF8<>>&);
