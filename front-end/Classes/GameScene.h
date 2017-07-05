@@ -31,6 +31,7 @@ public:
 
 	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
 	void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
+	void onMouseMove(EventMouse* event);
 	void addListener();
 	void update(float);
 };

@@ -43,6 +43,7 @@ bool GameScene::init()
 	background->setPosition(visibleSize / 2);
 	this->addChild(background, -1);
 
+	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, Document& dom) {
 		this->selfId = dom["data"]["selfId"].GetString();
 		auto& arr = dom["data"]["players"];
@@ -64,6 +65,7 @@ bool GameScene::init()
 		started = true;
 	});
 
+	// received periodically, like every x frames
 	GSocket->on("sync", [=](GameSocket* client, Document& dom) {
 		auto& arr = dom["data"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
@@ -82,6 +84,7 @@ bool GameScene::init()
 		}
 	});
 
+	// manually update the physics world
 	schedule(schedule_selector(GameScene::update), 1.0f / FRAME_RATE, kRepeatForever, 0.1f);
 
     return true;
@@ -134,11 +137,21 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	}
 }
 
+void GameScene::onMouseMove(EventMouse* event) {
+	auto pos = Vec2(event->getCursorX(), event->getCursorY());
+	selfPlayer->setRotation(-CC_RADIANS_TO_DEGREES((pos - selfPlayer->getPosition()).getAngle()) + 90.0f);
+}
+
 void GameScene::addListener() {
 	auto keyboardListener = EventListenerKeyboard::create();
 	keyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
 	keyboardListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+
+	auto mouseListener = EventListenerMouse::create();
+	mouseListener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMove, this);
+
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 	// auto contactListener = EventListenerPhysicsContact::create();
 	// contactListener->onContactBegin = CC_CALLBACK_1(GameScene::onConcactBegin, this);
