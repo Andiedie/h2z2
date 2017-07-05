@@ -110,32 +110,37 @@ void GameScene::update(float dt) {
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code) {
 	case cocos2d::EventKeyboard::KeyCode::KEY_W:
-		setSpeedY(selfPlayer, 150.0f);
+		setSpeedY(selfPlayer, 200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		setSpeedY(selfPlayer, -150.0f);
+		setSpeedY(selfPlayer, -200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		setSpeedX(selfPlayer, -150.0f);
+		setSpeedX(selfPlayer, -200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		setSpeedX(selfPlayer, 150.0f);
+		setSpeedX(selfPlayer, 200.0f);
 		break;
 	}
 }
 
 void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
+	auto body = selfPlayer->getPhysicsBody();
 	switch (code) {
 	case cocos2d::EventKeyboard::KeyCode::KEY_W:
+		if (body->getVelocity().y < 0.0f) break;
 		setSpeedY(selfPlayer, 0);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_S:
+		if (body->getVelocity().y > 0.0f) break;
 		setSpeedY(selfPlayer, 0);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_A:
+		if (body->getVelocity().x > 0.0f) break;
 		setSpeedX(selfPlayer, 0);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
+		if (body->getVelocity().x < 0.0f) break;
 		setSpeedX(selfPlayer, 0);
 		break;
 	}
