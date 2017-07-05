@@ -53,6 +53,9 @@ bool GameScene::init()
 				this->selfPlayer = createPlayer();
 				this->selfPlayer->setPosition(visibleSize / 2);
 				this->addChild(selfPlayer, 1);
+
+				// make the camera follow the player
+				this->runAction(Follow::create(selfPlayer));
 			}
 			else {
 				auto player = createPlayer(id);
@@ -93,6 +96,7 @@ bool GameScene::init()
 void GameScene::update(float dt) {
 	if (!started) return;
 	static int frameCounter = 0;
+	CCLOG("%lf %lf", selfPlayer->getPhysicsBody()->getPosition().x, selfPlayer->getPhysicsBody()->getPosition().y);
 	this->getScene()->getPhysicsWorld()->step(1.0f / FRAME_RATE);
 	frameCounter++;
 	if (frameCounter == SYNC_LIMIT) {
@@ -139,7 +143,8 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 
 void GameScene::onMouseMove(EventMouse* event) {
 	auto pos = Vec2(event->getCursorX(), event->getCursorY());
-	selfPlayer->setRotation(-CC_RADIANS_TO_DEGREES((pos - selfPlayer->getPosition()).getAngle()) + 90.0f);
+	// position of physicsBody as relative to the camera
+	selfPlayer->setRotation(-CC_RADIANS_TO_DEGREES((pos - selfPlayer->getPhysicsBody()->getPosition()).getAngle()) + 90.0f);
 }
 
 void GameScene::addListener() {
@@ -200,7 +205,11 @@ Document createSyncData(Node* player) {
 	// position & speed & angle
 	rapidjson::Value speedX, speedY, posX, posY;
 	auto speed = body->getVelocity();
-	auto pos = body->getPosition();
+
+	// note: must use position of 'player' instead of 'body', to have a correct position
+	//	 while working with the Follow Action
+	auto pos = player->getPosition();	
+
 	dom.AddMember("speedX", speed.x, dom.GetAllocator());
 	dom.AddMember("speedY", speed.y, dom.GetAllocator());
 	dom.AddMember("posX", pos.x, dom.GetAllocator());
