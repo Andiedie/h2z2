@@ -193,6 +193,8 @@ Sprite* createPlayer(const std::string& id) {
 	auto player = Sprite::create("player.png");
 	player->setScale(0.5f);
 	auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
+	playerBody->setCategoryBitmask(0x00000001);
+	playerBody->setCollisionBitmask(0xFFFFFFFE); // disable collision between players
 	player->setPhysicsBody(playerBody);
 	return player;
 }
