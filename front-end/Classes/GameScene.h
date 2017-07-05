@@ -8,7 +8,6 @@ USING_NS_CC;
 
 #define FRAME_RATE 60
 #define SYNC_RATE 20
-// #define SYNC_RATE 5
 #define SYNC_LIMIT FRAME_RATE/SYNC_RATE
 
 class GameScene : public cocos2d::Layer

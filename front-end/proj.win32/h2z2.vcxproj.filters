@@ -11,7 +11,7 @@
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\utils">
-      <UniqueIdentifier>{7e1c560c-f2aa-42b4-a3b2-67b9628cb61b}</UniqueIdentifier>
+      <UniqueIdentifier>{02bd42bf-27ae-467d-b198-09ace43a89a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -21,14 +21,14 @@
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\utils\GameSocket.cpp">
-      <Filter>src\utils</Filter>
+    <ClCompile Include="..\Classes\GameScene.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\WaitingHall.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameScene.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\Classes\utils\GameSocket.cpp">
+      <Filter>src\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -38,17 +38,17 @@
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\GameScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\WaitingHall.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\Classes\utils\GameSocket.h">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\utils\global.h">
       <Filter>src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\WaitingHall.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameScene.h">
-      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

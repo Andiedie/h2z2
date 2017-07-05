@@ -36,8 +36,7 @@ exports.requireGameStart = (server, player) => {
 exports.sync = (() => {
   let syncDataPool = new Map();
   return (server, player, data) => {
-    // console.log(data);
-    if (!syncDataPool.has(player.id)) syncDataPool.set(player.id, data);
+    syncDataPool.set(player.id, data);
     if (syncDataPool.size === server.playerPool.size) {
       // all sync-data received
       server.broadcast('sync', Array.from(syncDataPool).map(([key, value]) => {

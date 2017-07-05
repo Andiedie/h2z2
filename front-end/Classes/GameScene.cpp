@@ -1,7 +1,9 @@
 ﻿#include "GameScene.h"
 #include "utils\global.h"
+#include <chrono>
 
 USING_NS_CC;
+using namespace std::chrono;
 
 Scene* GameScene::createScene()
 {
@@ -41,11 +43,6 @@ bool GameScene::init()
 	background->setPosition(visibleSize / 2);
 	this->addChild(background, -1);
 
-	auto label = Label::create();
-	label->setPosition(visibleSize / 3);
-	label->setScale(3);
-	this->addChild(label, 2);
-
 	GSocket->on("initData", [=](GameSocket* client, Document& dom) {
 		this->selfId = dom["data"]["selfId"].GetString();
 		auto& arr = dom["data"]["players"];
@@ -68,23 +65,22 @@ bool GameScene::init()
 	});
 
 	GSocket->on("sync", [=](GameSocket* client, Document& dom) {
-		static clock_t last = clock();
-		static char buffer[20];
 		auto& arr = dom["data"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
+			// check ping
+			// milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			auto& data = arr[i]["data"];
+			// CCLOG("ping: %lld", ms.count() - data["timestamp"].GetInt64());
+
 			const std::string& id = arr[i]["id"].GetString();
 			auto it = this->otherPlayers.find(id);
 			if (it == this->otherPlayers.end()) continue; // data of selfPlayer, just ignore it
 
-			auto& data = arr[i]["data"];
 			auto player = it->second;
 			auto body = player->getPhysicsBody();
 			body->setVelocity(Vec2(data["speedX"].GetDouble(), data["speedY"].GetDouble()));
 			player->setPosition(data["posX"].GetDouble(), data["posY"].GetDouble());
 		}
-		label->setString(buffer);
-		sprintf(buffer, "%d", (clock() - last) * 1000 / CLOCKS_PER_SEC);
-		last = clock();
 	});
 
 	schedule(schedule_selector(GameScene::update), 1.0f / FRAME_RATE, kRepeatForever, 0.1f);
@@ -199,5 +195,7 @@ Document createSyncData(Sprite* player) {
 	dom.AddMember("speedY", speedY, dom.GetAllocator());
 	dom.AddMember("posX", posX, dom.GetAllocator());
 	dom.AddMember("posY", posY, dom.GetAllocator());
+	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	dom.AddMember("timestamp", ms.count(), dom.GetAllocator());	// used to check ping
 	return dom;
 }
