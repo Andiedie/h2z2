@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const Player = require('./Player');
 const events = require('./events');
+const log = require('../utils/log');
 
 module.exports = class Server {
   constructor () {
@@ -39,9 +40,10 @@ function onConnection (ws) {
   for (const [eventName, handler] of Object.entries(events)) {
     player.on(eventName, (...args) => {
       try {
-        handler(this, ...args);
+        handler(this, player, ...args);
       } catch (err) {
-        player.sendError(err.stack);
+        log.error(err.stack);
+        player.sendError(err.message);
       }
     });
   }

@@ -1,5 +1,7 @@
 const {EventEmitter} = require('events');
+const assert = require('assert');
 const gen = require('crypto-random-string');
+const log = require('../utils/log');
 
 module.exports = class Player extends EventEmitter {
   constructor (webSocket) {
@@ -10,20 +12,19 @@ module.exports = class Player extends EventEmitter {
     webSocket.on('message', message => {
       try {
         const obj = JSON.parse(message);
-        const event = obj.event || 'message';
-        if (!this.emit(event, this, obj.data)) {
-          console.error(`no such event handler: ${event}`);
-        }
+        const event = obj.event;
+        assert(event && this.listenerCount(event), `Unexpected event: ${event}`);
+        this.emit(event, obj.data);
       } catch (err) {
-        // raw data
-        this.emit('raw', this, message);
+        log.error(err.stack);
+        this.sendError(err.message);
       }
     });
 
-    webSocket.on('close', () => this.emit('logout', this));
+    webSocket.on('close', () => this.emit('logout'));
 
     // 在constructor后才绑定的事件
-    setImmediate(() => this.emit('login', this));
+    setImmediate(() => this.emit('login'));
   }
 
   sendEvent (eventName, data) {
