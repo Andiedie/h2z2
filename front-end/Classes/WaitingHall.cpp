@@ -45,7 +45,8 @@ bool WaitingHall::init()
 	playerLabel->setString("this is label");
 
 	GSocket->on("playerList", [=](GameSocket* client, Document& dom) {
-		playerLabel->setString(dom["data"].GetString());
+		auto& arr = dom["data"];
+		playerLabel->setString("Current player: " + std::to_string(arr.Size()));
 	});
 	GSocket->on("gameStart", [=](GameSocket* client, Document& dom) {
 		CCLOG("game start!");
