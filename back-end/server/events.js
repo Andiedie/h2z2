@@ -1,27 +1,33 @@
 const assert = require('assert');
+const log = require('../utils/log');
 
 // 各种和游戏有关的事件的处理器放这
 
 exports.raw = (server, player, message) => {
-  console.log(`${player.id}: ${message}`);
+  log.info(`${player.id}: ${message}`);
 };
 
 exports.login = (server, player) => {
   assert(!server.game.started, 'you can only login before the game starts');
   server.playerPool.add(player);
-  console.log(`player ${player.id} logged in`);
+  log.info(`player ${player.id} logged in`);
   server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id).join('|'));
 };
 
 exports.logout = (server, player) => {
   server.playerPool.delete(player);
-  console.log(`player ${player.id} logged out`);
+  log.info(`player ${player.id} logged out`);
+  if (!server.playerPool.size) {
+    log.info('Game over because there\'s no player');
+    server.game.started = false;
+  }
   server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id).join('|'));
 };
 
 exports.requireGameStart = (server, player) => {
   assert(!server.game.started, 'the game has already started');
-  // server.game.started = true;
+  server.game.started = true;
+  log.info('Game start');
   server.broadcast('gameStart');
   let players;
   server.broadcastMap('initData', (server, player) => {
