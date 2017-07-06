@@ -52,3 +52,8 @@ exports.sync = (() => {
     }
   };
 })();
+
+exports.broadcast = (server, player, data) => {
+  data.from = player.id; // add broadcaster info, may be used later
+  server.broadcast('broadcast', data, player);
+};
