@@ -17,6 +17,7 @@ public:
     static cocos2d::Scene* createScene();
 	Size visibleSize;
 	Vec2 origin;
+	Vec2 gameArea;
 
 	Sprite* selfPlayer;
 	std::string selfId;

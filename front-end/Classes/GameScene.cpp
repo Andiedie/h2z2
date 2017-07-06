@@ -1,6 +1,7 @@
 ﻿#include "GameScene.h"
 #include "utils\global.h"
 #include <chrono>
+#include <algorithm>
 
 USING_NS_CC;
 using namespace std::chrono;
@@ -40,7 +41,8 @@ bool GameScene::init()
     this->origin = Director::getInstance()->getVisibleOrigin();
 
 	auto background = Sprite::create("background.jpg");
-	background->setPosition(visibleSize / 2);
+	gameArea = background->getContentSize();
+	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
 
 	// received as the game starts
@@ -51,7 +53,7 @@ bool GameScene::init()
 			const std::string& id = arr[i].GetString();
 			if (id == selfId) {
 				this->selfPlayer = createPlayer();
-				this->selfPlayer->setPosition(visibleSize / 2);
+				this->selfPlayer->setPosition(gameArea / 2);
 				this->addChild(selfPlayer, 1);
 
 				// make the camera follow the player
@@ -94,9 +96,11 @@ bool GameScene::init()
 }
 
 void GameScene::update(float dt) {
+	using std::max;
+	using std::min;
+
 	if (!started) return;
 	static int frameCounter = 0;
-	CCLOG("%lf %lf", selfPlayer->getPhysicsBody()->getPosition().x, selfPlayer->getPhysicsBody()->getPosition().y);
 	this->getScene()->getPhysicsWorld()->step(1.0f / FRAME_RATE);
 	frameCounter++;
 	if (frameCounter == SYNC_LIMIT) {
@@ -105,6 +109,15 @@ void GameScene::update(float dt) {
 		// TODO: sync with server
 		GSocket->sendEvent("sync", createSyncData(this->selfPlayer));
 	}
+
+	// bound the player in the map
+	auto pos = selfPlayer->getPosition();
+	auto size = selfPlayer->getContentSize() * selfPlayer->getScale();
+	pos.x = min(pos.x, gameArea.x - size.width / 2);
+	pos.x = max(pos.x, size.width / 2);
+	pos.y = min(pos.y, gameArea.y - size.height / 2);
+	pos.y = max(pos.y, size.height / 2);
+	selfPlayer->setPosition(pos);
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
