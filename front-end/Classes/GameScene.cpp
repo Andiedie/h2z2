@@ -113,8 +113,6 @@ void GameScene::update(float dt) {
 	frameCounter++;
 	if (frameCounter == SYNC_LIMIT) {
 		frameCounter = 0;
-		// CCLOG("sync");
-		// TODO: sync with server
 		GSocket->sendEvent("sync", createSyncData(this->selfPlayer));
 	}
 
@@ -187,8 +185,34 @@ void GameScene::onMouseDown(EventMouse* event) {
 	dom.AddMember("posY", bullet->getPosition().y, dom.GetAllocator());
 	dom.AddMember("angle", bullet->getRotation(), dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
+}
 
-	// TODO: out-range check
+bool GameScene::onContactBegin(PhysicsContact &contact) {
+	// TODO: better contacting item type check
+	//		 now only deal with bullet-player contact
+	auto node1 = (Sprite*)contact.getShapeA()->getBody()->getNode();
+	auto node2 = (Sprite*)contact.getShapeB()->getBody()->getNode();
+	auto boom = createBoom(node1->getPosition());
+	this->addChild(boom, 2);
+	if (node1->getPhysicsBody()->getCategoryBitmask() == 0x00000002) {
+		node1->removeFromParentAndCleanup(true);
+		outOfRangeCheck.erase(node1);
+	}
+	else {
+		node2->removeFromParentAndCleanup(true);
+		outOfRangeCheck.erase(node2);
+	}
+
+	if (node1 == selfPlayer || node2 == selfPlayer) {
+		// self-player was hit
+		Document dom;
+		dom.SetObject();
+		dom.AddMember("type", "hit", dom.GetAllocator());
+		dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
+		GSocket->sendEvent("broadcast", dom);
+	}
+
+	return false;
 }
 
 void GameScene::addListener() {
@@ -200,12 +224,12 @@ void GameScene::addListener() {
 	mouseListener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMove, this);
 	mouseListener->onMouseDown = CC_CALLBACK_1(GameScene::onMouseDown, this);
 
+	auto contactListener = EventListenerPhysicsContact::create();
+	contactListener->onContactBegin = CC_CALLBACK_1(GameScene::onContactBegin, this);
+
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
-
-	// auto contactListener = EventListenerPhysicsContact::create();
-	// contactListener->onContactBegin = CC_CALLBACK_1(GameScene::onConcactBegin, this);
-	// _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 }
 
 void addSpeed(Node* node, Vec2 speed) {
@@ -240,6 +264,7 @@ Sprite* GameScene::createPlayer(const std::string& id) {
 	auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 	playerBody->setCategoryBitmask(0x00000001);
 	playerBody->setCollisionBitmask(0xFFFFFFFE); // disable collision between players
+	playerBody->setContactTestBitmask(0xFFFFFFFE);
 	player->setPhysicsBody(playerBody);
 	return player;
 }
@@ -255,12 +280,33 @@ Sprite* GameScene::createBullet(Vec2 pos, float angle) {
 	auto body = PhysicsBody::createBox(bullet->getContentSize() * bullet->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 	body->setCategoryBitmask(0x00000002);
 	body->setCollisionBitmask(0x00000001); // only collides with player
+	body->setContactTestBitmask(0x00000001);
 	body->setVelocity(600.0f * normalizedDirection);
 	bullet->setPhysicsBody(body);
 
 	this->outOfRangeCheck.insert(bullet);
 
 	return bullet;
+}
+
+Sprite* GameScene::createBoom(Vec2 pos) {
+	auto boom = Sprite::create("bang.png");
+	boom->setPosition(pos);
+	boom->setScale(0.3f);
+	boom->runAction(
+		Sequence::create(
+			ScaleBy::create(0.2f, 1.5f),
+			ScaleBy::create(0.15f, 0.5f),
+			FadeOut::create(0.1f),
+			CCCallFunc::create([=]() {
+				CCLOG("boom removed.");
+				boom->removeFromParentAndCleanup(true);
+			}),
+			NULL
+		)
+	);
+
+	return boom;
 }
 
 void GameScene::checkOutOfRange(float dt) {

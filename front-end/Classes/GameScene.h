@@ -40,6 +40,8 @@ public:
 	void update(float);
 	Sprite* createPlayer(const std::string& id = "");
 	Sprite* createBullet(Vec2 pos, float angle);
+	Sprite* createBoom(Vec2 pos);
+	bool onContactBegin(PhysicsContact &contact);
 };
 
 void addSpeed(Node*, Vec2);
