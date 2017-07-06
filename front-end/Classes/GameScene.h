@@ -18,6 +18,7 @@ public:
 	Size visibleSize;
 	Vec2 origin;
 	Vec2 gameArea;
+	std::set<Sprite*> outOfRangeCheck;
 
 	Sprite* selfPlayer;
 	std::string selfId;
@@ -33,14 +34,17 @@ public:
 	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
 	void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
 	void onMouseMove(EventMouse* event);
+	void onMouseDown(EventMouse* event);
+	void checkOutOfRange(float);
 	void addListener();
 	void update(float);
+	Sprite* createPlayer(const std::string& id = "");
+	Sprite* createBullet(Vec2 pos, float angle);
 };
 
 void addSpeed(Node*, Vec2);
 void setSpeedX(Node*, float);
 void setSpeedY(Node*, float);
 void resetPhysics(Node*, PhysicsBody*);
-Sprite* createPlayer(const std::string& id = "");
 Document createSyncData(Node*);
 void syncSprite(Node*, GenericValue<rapidjson::UTF8<>>&);
