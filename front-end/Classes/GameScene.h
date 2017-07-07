@@ -49,6 +49,7 @@ public:
 	void updateHpLabel(float hp);
 
 	void handleContact(Player* player, Bullet* bullet);
+	void handleContact(Player* player, HealPack* pack);
 };
 
 void resetPhysics(Node*, PhysicsBody*);

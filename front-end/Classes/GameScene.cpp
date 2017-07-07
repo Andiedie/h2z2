@@ -67,10 +67,16 @@ bool GameScene::init()
 				this->runAction(Follow::create(selfPlayer));
 			}
 			else {
-				auto player = Player::create(gameArea / 2);
+				auto player = Player::create();
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
 			}
+		}
+
+		auto& packs = data["healPacks"];
+		for (SizeType i = 0; i < packs.Size(); i++) {
+			auto pack = HealPack::create(packs[i]);
+			this->addChild(pack, 0);
 		}
 
 		started = true;
@@ -114,6 +120,10 @@ bool GameScene::init()
 			it->second->removeFromParentAndCleanup(true);
 			otherPlayers.erase(it);
 		}
+	});
+
+	GSocket->on("eatPack", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		HealPack::remove(data["packId"].GetString());
 	});
 
 	// manually update the physics world
@@ -214,6 +224,8 @@ bool GameScene::onContactBegin(PhysicsContact &contact) {
 
 	// handle player-bullet collision
 	if (_handleContact<Player, Bullet>(node1, node2)) return false;
+	// handle player-healpack collision
+	if (_handleContact<Player, HealPack>(node1, node2)) return false;
 
 	return false;
 }
@@ -250,6 +262,13 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 	}
 }
 
+void GameScene::handleContact(Player* player, HealPack* pack) {
+	player->heal(pack->getHp());
+	updateHpLabel(player->getHp());
+	pack->broadcastEaten();
+	HealPack::remove(pack->getId());
+}
+
 void GameScene::gameOver() {
 	_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
 	_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
@@ -280,7 +299,6 @@ bool GameScene::_handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2) {
 	}
 	return false;
 }
-
 
 void resetPhysics(Node* node, PhysicsBody* body) {
 	node->removeComponent(node->getPhysicsBody());

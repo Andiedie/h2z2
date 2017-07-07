@@ -34,7 +34,7 @@ Bullet* Bullet::create(Vec2 pos, float angle, float velocity, float offset) {
 		bullet->setScale(0.2f);
 
 		// init physicsBody
-		auto body = PhysicsBody::createBox(bullet->getContentSize() * bullet->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
+		auto body = PhysicsBody::createBox(bullet->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		body->setCategoryBitmask(0x00000002);
 		body->setCollisionBitmask(0x00000001); // only collides with player
 		body->setContactTestBitmask(0x00000001);

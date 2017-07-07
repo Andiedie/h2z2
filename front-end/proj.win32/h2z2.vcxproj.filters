@@ -42,6 +42,9 @@
     <ClCompile Include="..\Classes\Sprite\Boom.cpp">
       <Filter>src\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\HealPack.cpp">
+      <Filter>src\Sprite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -72,6 +75,9 @@
       <Filter>src\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\Bullet.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\HealPack.h">
       <Filter>src\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
