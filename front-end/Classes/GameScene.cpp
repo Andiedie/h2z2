@@ -55,10 +55,10 @@ bool GameScene::init()
 		for (SizeType i = 0; i < arr.Size(); i++) {
 			const std::string& id = arr[i].GetString();
 			if (id == selfId) {
-				selfPlayer = Player::create(gameArea / 2);
+				auto& selfPos = data["selfPos"];
+				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				hpLabel = Label::createWithSystemFont("", "Arial", 30);;
-				// hpLabel->setPosition(gameArea.x / 2, 20.0f);
 				hpLabel->setPosition(visibleSize.width / 2, 20.0f);
 				updateHpLabel(selfPlayer->getHp());
 				uiLayer->addChild(hpLabel);

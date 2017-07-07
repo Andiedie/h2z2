@@ -28,7 +28,8 @@ exports.requireGameStart = (server, player) => {
   server.broadcastMap('initData', (server, player) => {
     return {
       players,
-      selfId: player.id
+      selfId: player.id,
+      selfPos: {x: Math.random() * 1920, y: Math.random() * 1080}
     };
   });
 };
