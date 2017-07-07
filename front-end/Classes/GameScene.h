@@ -2,6 +2,7 @@
 
 #include "utils/global.h"
 #include "cocos2d.h"
+#include "Sprite\Player.h"
 #include <map>
 
 USING_NS_CC;
@@ -20,10 +21,10 @@ public:
 	Vec2 gameArea;
 	std::set<Sprite*> outOfRangeCheck;
 
-	Sprite* selfPlayer;
+	Player* selfPlayer;
 	std::string selfId;
 
-	std::map<std::string, Sprite*> otherPlayers;
+	std::map<std::string, Player*> otherPlayers;
 	bool started = false;
 
     virtual bool init();
@@ -38,15 +39,9 @@ public:
 	void checkOutOfRange(float);
 	void addListener();
 	void update(float);
-	Sprite* createPlayer(const std::string& id = "");
 	Sprite* createBullet(Vec2 pos, float angle);
 	Sprite* createBoom(Vec2 pos);
 	bool onContactBegin(PhysicsContact &contact);
 };
 
-void addSpeed(Node*, Vec2);
-void setSpeedX(Node*, float);
-void setSpeedY(Node*, float);
 void resetPhysics(Node*, PhysicsBody*);
-Document createSyncData(Node*);
-void syncSprite(Node*, GenericValue<rapidjson::UTF8<>>&);

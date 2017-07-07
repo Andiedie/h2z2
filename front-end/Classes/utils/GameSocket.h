@@ -16,6 +16,7 @@ class GameSocket : public WebSocket::Delegate {
 	WebSocket* socket;
 	std::map<std::string, std::function<void(GameSocket*, Document&)>> eventPool;
 	std::function<void(GameSocket*)> connectionCallback;
+	static std::string stringifyDom(const Document& dom);
 
 	GameSocket();
 	void onOpen(WebSocket* ws) override;
@@ -32,7 +33,5 @@ public:
 
 	void onConnection(std::function<void(GameSocket*)> fn);
 };
-
-std::string stringifyDom(const Document& dom);
 
 #define GSocket GameSocket::getInstance()

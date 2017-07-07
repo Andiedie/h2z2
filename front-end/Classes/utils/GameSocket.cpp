@@ -74,7 +74,7 @@ void GameSocket::removeEventHandler(const std::string& eventName) {
 	eventPool.erase(eventName);
 }
 
-std::string stringifyDom(const Document& dom) {
+std::string GameSocket::stringifyDom(const Document& dom) {
 	StringBuffer buffer;
 	Writer<StringBuffer> writer(buffer);
 	dom.Accept(writer);

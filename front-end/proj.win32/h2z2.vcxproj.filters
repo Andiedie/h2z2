@@ -13,6 +13,9 @@
     <Filter Include="src\utils">
       <UniqueIdentifier>{02bd42bf-27ae-467d-b198-09ace43a89a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Sprite">
+      <UniqueIdentifier>{0ce9a00f-9016-42b3-ab32-a73c700e79d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -29,6 +32,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\utils\GameSocket.cpp">
       <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\Player.cpp">
+      <Filter>src\Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\utils\global.h">
       <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Player.h">
+      <Filter>src\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

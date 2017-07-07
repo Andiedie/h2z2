@@ -52,16 +52,14 @@ bool GameScene::init()
 		for (SizeType i = 0; i < arr.Size(); i++) {
 			const std::string& id = arr[i].GetString();
 			if (id == selfId) {
-				this->selfPlayer = createPlayer();
-				this->selfPlayer->setPosition(gameArea / 2);
+				this->selfPlayer = Player::create(gameArea / 2);
 				this->addChild(selfPlayer, 1);
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
 			}
 			else {
-				auto player = createPlayer(id);
-				player->setPosition(visibleSize / 2);
+				auto player = Player::create(gameArea / 2);
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
 			}
@@ -85,7 +83,7 @@ bool GameScene::init()
 			if (it == this->otherPlayers.end()) continue; // data of selfPlayer, just ignore it
 
 			auto player = it->second;
-			syncSprite(player, data);
+			player->sync(data);
 		}
 	});
 
@@ -113,7 +111,7 @@ void GameScene::update(float dt) {
 	frameCounter++;
 	if (frameCounter == SYNC_LIMIT) {
 		frameCounter = 0;
-		GSocket->sendEvent("sync", createSyncData(this->selfPlayer));
+		GSocket->sendEvent("sync", this->selfPlayer->createSyncData());
 	}
 
 	// bound the player in the map
@@ -129,16 +127,16 @@ void GameScene::update(float dt) {
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code) {
 	case cocos2d::EventKeyboard::KeyCode::KEY_W:
-		setSpeedY(selfPlayer, 200.0f);
+		selfPlayer->setVelocityY(200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		setSpeedY(selfPlayer, -200.0f);
+		selfPlayer->setVelocityY(-200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		setSpeedX(selfPlayer, -200.0f);
+		selfPlayer->setVelocityX(-200.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		setSpeedX(selfPlayer, 200.0f);
+		selfPlayer->setVelocityX(200.0f);
 		break;
 	}
 }
@@ -148,19 +146,19 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	switch (code) {
 	case cocos2d::EventKeyboard::KeyCode::KEY_W:
 		if (body->getVelocity().y < 0.0f) break;
-		setSpeedY(selfPlayer, 0);
+		selfPlayer->setVelocityY(0.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_S:
 		if (body->getVelocity().y > 0.0f) break;
-		setSpeedY(selfPlayer, 0);
+		selfPlayer->setVelocityY(0.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_A:
 		if (body->getVelocity().x > 0.0f) break;
-		setSpeedX(selfPlayer, 0);
+		selfPlayer->setVelocityX(0.0f);
 		break;
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
 		if (body->getVelocity().x < 0.0f) break;
-		setSpeedX(selfPlayer, 0);
+		selfPlayer->setVelocityX(0.0f);
 		break;
 	}
 }
@@ -232,41 +230,9 @@ void GameScene::addListener() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 }
 
-void addSpeed(Node* node, Vec2 speed) {
-	auto body = node->getPhysicsBody();
-	if (body) {
-		body->setVelocity(body->getVelocity() + speed);
-	}
-}
-
-void setSpeedX(Node* node, float spx) {
-	auto body = node->getPhysicsBody();
-	if (body) {
-		body->setVelocity(Vec2(spx, body->getVelocity().y));
-	}
-}
-
-void setSpeedY(Node* node, float spy) {
-	auto body = node->getPhysicsBody();
-	if (body) {
-		body->setVelocity(Vec2(body->getVelocity().x, spy));
-	}
-}
-
 void resetPhysics(Node* node, PhysicsBody* body) {
 	node->removeComponent(node->getPhysicsBody());
 	node->setPhysicsBody(body);
-}
-
-Sprite* GameScene::createPlayer(const std::string& id) {
-	auto player = Sprite::create("player.png");
-	player->setScale(0.5f);
-	auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
-	playerBody->setCategoryBitmask(0x00000001);
-	playerBody->setCollisionBitmask(0xFFFFFFFE); // disable collision between players
-	playerBody->setContactTestBitmask(0xFFFFFFFE);
-	player->setPhysicsBody(playerBody);
-	return player;
 }
 
 Sprite* GameScene::createBullet(Vec2 pos, float angle) {
@@ -321,35 +287,4 @@ void GameScene::checkOutOfRange(float dt) {
 		CCLOG("bullet removed");
 		if (it == outOfRangeCheck.end()) break;
 	}
-}
-
-Document createSyncData(Node* player) {
-	Document dom;
-	auto body = player->getPhysicsBody();
-	dom.SetObject();
-
-	// position & speed & angle
-	rapidjson::Value speedX, speedY, posX, posY;
-	auto speed = body->getVelocity();
-
-	// note: must use position of 'player' instead of 'body', to have a correct position
-	//	 while working with the Follow Action
-	auto pos = player->getPosition();
-
-	dom.AddMember("speedX", speed.x, dom.GetAllocator());
-	dom.AddMember("speedY", speed.y, dom.GetAllocator());
-	dom.AddMember("posX", pos.x, dom.GetAllocator());
-	dom.AddMember("posY", pos.y, dom.GetAllocator());
-	dom.AddMember("angle", player->getRotation(), dom.GetAllocator());
-
-	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	dom.AddMember("timestamp", ms.count(), dom.GetAllocator());	// used to check ping
-	return dom;
-}
-
-void syncSprite(Node* sprite, GenericValue<rapidjson::UTF8<>>& data) {
-	auto body = sprite->getPhysicsBody();
-	body->setVelocity(Vec2(data["speedX"].GetDouble(), data["speedY"].GetDouble()));
-	sprite->setPosition(data["posX"].GetDouble(), data["posY"].GetDouble());
-	sprite->setRotation(data["angle"].GetDouble());
 }
