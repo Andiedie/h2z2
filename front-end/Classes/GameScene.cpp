@@ -90,13 +90,12 @@ bool GameScene::init()
 	// deal with other players' shots
 	GSocket->on("shoot", [=](GameSocket* client, Document& dom) {
 		auto& data = dom["data"];
-		auto bullet = createBullet(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble());
+		auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble());
 		this->addChild(bullet, 1);
 	});
 
 	// manually update the physics world
 	this->schedule(schedule_selector(GameScene::update), 1.0f / FRAME_RATE, kRepeatForever, 0.1f);
-	this->schedule(schedule_selector(GameScene::checkOutOfRange), 1.0f, kRepeatForever, 0.0f);
 
     return true;
 }
@@ -171,18 +170,11 @@ void GameScene::onMouseMove(EventMouse* event) {
 
 void GameScene::onMouseDown(EventMouse* event) {
 	// create a bullet
-	auto bullet = createBullet(selfPlayer->getPosition(), selfPlayer->getRotation());
-
+	auto bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
 	this->addChild(bullet, 1);
 
 	// broadcast shooting event
-	Document dom;
-	dom.SetObject();
-	dom.AddMember("type", "shoot", dom.GetAllocator()); // indicate broadcasting type
-	dom.AddMember("posX", bullet->getPosition().x, dom.GetAllocator());
-	dom.AddMember("posY", bullet->getPosition().y, dom.GetAllocator());
-	dom.AddMember("angle", bullet->getRotation(), dom.GetAllocator());
-	GSocket->sendEvent("broadcast", dom);
+	bullet->broadcast();
 }
 
 bool GameScene::onContactBegin(PhysicsContact &contact) {
@@ -190,7 +182,7 @@ bool GameScene::onContactBegin(PhysicsContact &contact) {
 	//		 now only deal with bullet-player contact
 	auto node1 = (Sprite*)contact.getShapeA()->getBody()->getNode();
 	auto node2 = (Sprite*)contact.getShapeB()->getBody()->getNode();
-	auto boom = createBoom(node1->getPosition());
+	auto boom = Boom::create(node1->getPosition());
 	this->addChild(boom, 2);
 	if (node1->getPhysicsBody()->getCategoryBitmask() == 0x00000002) {
 		node1->removeFromParentAndCleanup(true);
@@ -233,58 +225,4 @@ void GameScene::addListener() {
 void resetPhysics(Node* node, PhysicsBody* body) {
 	node->removeComponent(node->getPhysicsBody());
 	node->setPhysicsBody(body);
-}
-
-Sprite* GameScene::createBullet(Vec2 pos, float angle) {
-	auto bullet = Sprite::create("bullet.png");
-	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
-	bullet->setRotation(angle);
-	pos += 35.0f * normalizedDirection;
-	bullet->setPosition(pos);
-	bullet->setScale(0.2f);
-
-	auto body = PhysicsBody::createBox(bullet->getContentSize() * bullet->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
-	body->setCategoryBitmask(0x00000002);
-	body->setCollisionBitmask(0x00000001); // only collides with player
-	body->setContactTestBitmask(0x00000001);
-	body->setVelocity(600.0f * normalizedDirection);
-	bullet->setPhysicsBody(body);
-
-	this->outOfRangeCheck.insert(bullet);
-
-	return bullet;
-}
-
-Sprite* GameScene::createBoom(Vec2 pos) {
-	auto boom = Sprite::create("bang.png");
-	boom->setPosition(pos);
-	boom->setScale(0.3f);
-	boom->runAction(
-		Sequence::create(
-			ScaleBy::create(0.2f, 1.5f),
-			ScaleBy::create(0.15f, 0.5f),
-			FadeOut::create(0.1f),
-			CCCallFunc::create([=]() {
-				CCLOG("boom removed.");
-				boom->removeFromParentAndCleanup(true);
-			}),
-			NULL
-		)
-	);
-
-	return boom;
-}
-
-void GameScene::checkOutOfRange(float dt) {
-	const static float limit = 100.0f;
-	for (auto it = outOfRangeCheck.begin(); it != outOfRangeCheck.end(); it++) {
-		auto node = *it;
-		auto pos = node->getPosition();
-		if (pos.x >= -limit && pos.y <= gameArea.x + limit) continue;
-		if (pos.y >= -limit && pos.y <= gameArea.y + limit) continue;
-		node->removeFromParentAndCleanup(true);
-		outOfRangeCheck.erase(it++);
-		CCLOG("bullet removed");
-		if (it == outOfRangeCheck.end()) break;
-	}
 }

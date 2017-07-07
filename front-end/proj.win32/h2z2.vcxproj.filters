@@ -36,6 +36,12 @@
     <ClCompile Include="..\Classes\Sprite\Player.cpp">
       <Filter>src\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\Bullet.cpp">
+      <Filter>src\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\Boom.cpp">
+      <Filter>src\Sprite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -57,6 +63,15 @@
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\Player.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Sprites.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Boom.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Bullet.h">
       <Filter>src\Sprite</Filter>
     </ClInclude>
   </ItemGroup>

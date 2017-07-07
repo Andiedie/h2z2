@@ -2,7 +2,7 @@
 
 #include "utils/global.h"
 #include "cocos2d.h"
-#include "Sprite\Player.h"
+#include "Sprite\Sprites.h"
 #include <map>
 
 USING_NS_CC;
@@ -36,11 +36,8 @@ public:
 	void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
 	void onMouseMove(EventMouse* event);
 	void onMouseDown(EventMouse* event);
-	void checkOutOfRange(float);
 	void addListener();
 	void update(float);
-	Sprite* createBullet(Vec2 pos, float angle);
-	Sprite* createBoom(Vec2 pos);
 	bool onContactBegin(PhysicsContact &contact);
 };
 

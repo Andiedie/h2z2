@@ -11,8 +11,6 @@ Player::Player() {}
 Player* Player::create(Vec2 pos) {
 	auto player = new (std::nothrow) Player();
 	if (player && player->initWithFile("player.png")) {
-		player->autorelease();
-
 		// init
 		player->setScale(0.5f);
 		player->setPosition(pos);
@@ -22,6 +20,7 @@ Player* Player::create(Vec2 pos) {
 		playerBody->setContactTestBitmask(0xFFFFFFFE);
 		player->setPhysicsBody(playerBody);
 
+		player->autorelease();
 		return player;
 	}
 	CC_SAFE_DELETE(player);
