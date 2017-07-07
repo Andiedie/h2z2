@@ -31,14 +31,17 @@ void GameSocket::onMessage(WebSocket* ws, const WebSocket::Data &data) {
 	dom.Parse(data.bytes);
 	std::string e = dom.HasMember("event") ? dom["event"].GetString() : "message";
 	auto it = eventPool.find(e);
-	if (it != eventPool.end()) it->second.operator()(this, dom);
+	if (it != eventPool.end()) {
+		if (dom.HasMember("data")) it->second.operator()(this, dom["data"]);
+		else it->second.operator()(this, Document());
+	}
 }
 
 void GameSocket::onClose(WebSocket* ws) {
 	CCLOG("GameSocket: close");
 }
 
-void GameSocket::sendEvent(const std::string& eventName, Document& dom) {
+void GameSocket::sendEvent(const std::string& eventName, GenericValue<UTF8<>>& dom) {
 	Document toSend;
 	toSend.SetObject();
 	auto& allocator = toSend.GetAllocator();
@@ -63,7 +66,7 @@ void GameSocket::onConnection(std::function<void(GameSocket*)> fn) {
 	connectionCallback = fn;
 }
 
-void GameSocket::on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn) {
+void GameSocket::on(const std::string& eventName, std::function<void(GameSocket*, GenericValue<UTF8<>>&)> fn) {
 	// with replacing
 	auto it = eventPool.find(eventName);
 	if (it != eventPool.end()) it->second = fn;

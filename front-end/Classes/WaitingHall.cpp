@@ -36,19 +36,18 @@ bool WaitingHall::init()
 
 	});
 
-	GSocket->on("error", [](GameSocket* client, Document& dom) {
-		CCLOG("manual-error: %s", dom["data"].GetString());
+	GSocket->on("error", [](GameSocket* client, GenericValue<UTF8<>>& data) {
+		CCLOG("manual-error: %s", data.GetString());
 	});
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
 	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	playerLabel->setString("this is label");
 
-	GSocket->on("playerList", [=](GameSocket* client, Document& dom) {
-		auto& arr = dom["data"];
+	GSocket->on("playerList", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
 		playerLabel->setString("Current player: " + std::to_string(arr.Size()));
 	});
-	GSocket->on("gameStart", [=](GameSocket* client, Document& dom) {
+	GSocket->on("gameStart", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		CCLOG("game start!");
 		// switch to game scene
 		Director::getInstance()->pushScene(GameScene::createScene());

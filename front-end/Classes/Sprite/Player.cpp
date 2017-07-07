@@ -6,6 +6,8 @@
 USING_NS_CC;
 using namespace std::chrono;
 
+const float Player::maxHp = 200.0f;
+
 Player::Player() {}
 
 Player* Player::create(Vec2 pos) {
@@ -77,4 +79,34 @@ void Player::setVelocityY(float vy) {
 	if (body) {
 		body->setVelocity(Vec2(body->getVelocity().x, vy));
 	}
+}
+
+void Player::broadcastHit(float dmg) const {
+	Document dom;
+	dom.SetObject();
+	dom.AddMember("type", "hit", dom.GetAllocator());
+	dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
+	GSocket->sendEvent("broadcast", dom);
+}
+
+float Player::getHp() const { return hp; }
+
+void Player::setHp(float _hp) {
+	hp = std::min(_hp, maxHp);
+}
+
+void Player::heal(float _hp) {
+	hp = std::min(hp + _hp, maxHp);
+}
+
+bool Player::damage(float _hp) {
+	hp = std::max(0.0f, hp - _hp);
+	return hp > 0.0f;
+}
+
+void Player::broadcastDead() const {
+	Document dom;
+	dom.SetObject();
+	dom.AddMember("type", "dead", dom.GetAllocator());
+	GSocket->sendEvent("broadcast", dom);
 }

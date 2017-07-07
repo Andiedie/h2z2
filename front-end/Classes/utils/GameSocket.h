@@ -14,7 +14,7 @@ using namespace rapidjson;
 class GameSocket : public WebSocket::Delegate {
 	static GameSocket* instance;
 	WebSocket* socket;
-	std::map<std::string, std::function<void(GameSocket*, Document&)>> eventPool;
+	std::map<std::string, std::function<void(GameSocket*, GenericValue<UTF8<>>&)>> eventPool;
 	std::function<void(GameSocket*)> connectionCallback;
 	static std::string stringifyDom(const Document& dom);
 
@@ -26,9 +26,9 @@ class GameSocket : public WebSocket::Delegate {
 public:
 	static GameSocket* getInstance();
 
-	void sendEvent(const std::string& eventName, Document& dom);
+	void sendEvent(const std::string& eventName, GenericValue<UTF8<>>& dom);
 	void sendEvent(const std::string& eventName);
-	void on(const std::string& eventName, std::function<void(GameSocket*, Document&)> fn);
+	void on(const std::string& eventName, std::function<void(GameSocket*, GenericValue<UTF8<>>&)> fn);
 	void removeEventHandler(const std::string& eventName);
 
 	void onConnection(std::function<void(GameSocket*)> fn);

@@ -16,8 +16,10 @@ class GameScene : public cocos2d::Layer
 	template<typename Type1, typename Type2>
 	bool _handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2);
 public:
+	static cocos2d::Scene* createScene();
+	cocos2d::Layer *uiLayer;
+
 	PhysicsWorld* mWorld;
-    static cocos2d::Scene* createScene();
 	Size visibleSize;
 	Vec2 origin;
 	Vec2 gameArea;
@@ -28,6 +30,8 @@ public:
 
 	std::map<std::string, Player*> otherPlayers;
 	bool started = false;
+	bool alive = true;
+	cocos2d::Label *hpLabel;
 
     virtual bool init();
     
@@ -41,6 +45,8 @@ public:
 	void addListener();
 	void update(float);
 	bool onContactBegin(PhysicsContact &contact);
+	void gameOver();
+	void updateHpLabel(float hp);
 
 	void handleContact(Player* player, Bullet* bullet);
 };

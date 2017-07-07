@@ -15,11 +15,13 @@ Scene* GameScene::createScene()
 	scene->getPhysicsWorld()->setGravity(Vec2::ZERO);
     
     // 'layer' is an autorelease object
-    auto layer = GameScene::create();
-	layer->mWorld = scene->getPhysicsWorld();
+    auto gameLayer = GameScene::create();
+	gameLayer->mWorld = scene->getPhysicsWorld();
+	gameLayer->uiLayer = Layer::create();
 
     // add layer as a child to scene
-    scene->addChild(layer);
+    scene->addChild(gameLayer);
+	scene->addChild(gameLayer->uiLayer, 1);
 
     // return the scene
     return scene;
@@ -47,14 +49,19 @@ bool GameScene::init()
 	this->addChild(background, -1);
 
 	// received as the game starts
-	GSocket->on("initData", [=](GameSocket* client, Document& dom) {
-		this->selfId = dom["data"]["selfId"].GetString();
-		auto& arr = dom["data"]["players"];
+	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		this->selfId = data["selfId"].GetString();
+		auto& arr = data["players"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
 			const std::string& id = arr[i].GetString();
 			if (id == selfId) {
-				this->selfPlayer = Player::create(gameArea / 2);
+				selfPlayer = Player::create(gameArea / 2);
 				this->addChild(selfPlayer, 1);
+				hpLabel = Label::createWithSystemFont("", "Arial", 30);;
+				// hpLabel->setPosition(gameArea.x / 2, 20.0f);
+				hpLabel->setPosition(visibleSize.width / 2, 20.0f);
+				updateHpLabel(selfPlayer->getHp());
+				uiLayer->addChild(hpLabel);
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
@@ -70,8 +77,7 @@ bool GameScene::init()
 	});
 
 	// received periodically, like every x frames
-	GSocket->on("sync", [=](GameSocket* client, Document& dom) {
-		auto& arr = dom["data"];
+	GSocket->on("sync", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
 		for (SizeType i = 0; i < arr.Size(); i++) {
 			auto& data = arr[i]["data"];
 
@@ -89,10 +95,25 @@ bool GameScene::init()
 	});
 
 	// deal with other players' shots
-	GSocket->on("shoot", [=](GameSocket* client, Document& dom) {
-		auto& data = dom["data"];
+	GSocket->on("shoot", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble(), data["velocity"].GetDouble(), 0.0f);
 		this->addChild(bullet, 1);
+	});
+
+	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto who = data["from"].GetString();
+		auto dmg = data["damage"].GetDouble();
+		auto it = otherPlayers.find(who);
+		if (it != otherPlayers.end()) it->second->damage(dmg);
+	});
+
+	GSocket->on("dead", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto who = data["from"].GetString();
+		auto it = otherPlayers.find(who);
+		if (it != otherPlayers.end()) {
+			it->second->removeFromParentAndCleanup(true);
+			otherPlayers.erase(it);
+		}
 	});
 
 	// manually update the physics world
@@ -109,6 +130,8 @@ void GameScene::update(float dt) {
 	static int frameCounter = 0;
 	this->getScene()->getPhysicsWorld()->step(1.0f / FRAME_RATE);
 	frameCounter++;
+
+	if (!selfPlayer) return;
 	if (frameCounter == SYNC_LIMIT) {
 		frameCounter = 0;
 		GSocket->sendEvent("sync", this->selfPlayer->createSyncData());
@@ -218,12 +241,31 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 	bullet->removeFromParentAndCleanup(true);
 	if (player == selfPlayer) {
 		// self-player was hit
-		Document dom;
-		dom.SetObject();
-		dom.AddMember("type", "hit", dom.GetAllocator());
-		dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
-		GSocket->sendEvent("broadcast", dom);
+		player->broadcastHit(20.0f);
+		if (!player->damage(20.0f)) {
+			player->broadcastDead();
+			gameOver();
+		}
+		updateHpLabel(player->getHp());
 	}
+}
+
+void GameScene::gameOver() {
+	_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
+	_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
+	alive = false;
+	// invisible & untouchable
+	auto body = selfPlayer->getPhysicsBody();
+	selfPlayer->setVisible(false);
+	body->setCollisionBitmask(0x00000000);
+	body->setContactTestBitmask(0x00000000);
+	body->setCategoryBitmask(0x00000000);
+}
+
+void GameScene::updateHpLabel(float hp) {
+	static char buffer[20];
+	sprintf(buffer, "hp: %.2f", hp);
+	hpLabel->setString(buffer);
 }
 
 template<typename Type1, typename Type2>
