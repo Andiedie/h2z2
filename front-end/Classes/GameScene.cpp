@@ -40,7 +40,7 @@ bool GameScene::init()
     this->visibleSize = Director::getInstance()->getVisibleSize();
     this->origin = Director::getInstance()->getVisibleOrigin();
 
-	auto background = Sprite::create("background.jpg");
+	auto background = Sprite::create("background.png");
 	gameArea = background->getContentSize();
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
