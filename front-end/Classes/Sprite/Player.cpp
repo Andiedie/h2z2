@@ -12,7 +12,7 @@ Player* Player::create(Vec2 pos) {
 	auto player = new (std::nothrow) Player();
 	if (player && player->initWithFile("player.png")) {
 		// init
-		player->setScale(0.5f);
+		player->setScale(0.2f);
 		player->setPosition(pos);
 		auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		playerBody->setCategoryBitmask(0x00000001);
