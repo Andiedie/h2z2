@@ -189,25 +189,9 @@ bool GameScene::onContactBegin(PhysicsContact &contact) {
 	//		 now only deal with bullet-player contact
 	auto node1 = (Sprite*)contact.getShapeA()->getBody()->getNode();
 	auto node2 = (Sprite*)contact.getShapeB()->getBody()->getNode();
-	auto boom = Boom::create(node1->getPosition());
-	this->addChild(boom, 2);
-	if (node1->getPhysicsBody()->getCategoryBitmask() == 0x00000002) {
-		node1->removeFromParentAndCleanup(true);
-		outOfRangeCheck.erase(node1);
-	}
-	else {
-		node2->removeFromParentAndCleanup(true);
-		outOfRangeCheck.erase(node2);
-	}
 
-	if (node1 == selfPlayer || node2 == selfPlayer) {
-		// self-player was hit
-		Document dom;
-		dom.SetObject();
-		dom.AddMember("type", "hit", dom.GetAllocator());
-		dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
-		GSocket->sendEvent("broadcast", dom);
-	}
+	// handle player-bullet collision
+	if (_handleContact<Player, Bullet>(node1, node2)) return false;
 
 	return false;
 }
@@ -228,6 +212,34 @@ void GameScene::addListener() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 }
+
+void GameScene::handleContact(Player* player, Bullet* bullet) {
+	auto boom = Boom::create(player->getPosition());
+	this->addChild(boom, 2);
+	bullet->removeFromParentAndCleanup(true);
+	if (player == selfPlayer) {
+		// self-player was hit
+		Document dom;
+		dom.SetObject();
+		dom.AddMember("type", "hit", dom.GetAllocator());
+		dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
+		GSocket->sendEvent("broadcast", dom);
+	}
+}
+
+template<typename Type1, typename Type2>
+bool GameScene::_handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2) {
+	if (isType<Type1>(node1) && isType<Type2>(node2)) {
+		handleContact(castType<Type1>(node1), castType<Type2>(node2));
+		return true;
+	}
+	if (isType<Type1>(node2) && isType<Type2>(node1)) {
+		handleContact(castType<Type1>(node2), castType<Type2>(node1));
+		return true;
+	}
+	return false;
+}
+
 
 void resetPhysics(Node* node, PhysicsBody* body) {
 	node->removeComponent(node->getPhysicsBody());

@@ -13,6 +13,8 @@ USING_NS_CC;
 
 class GameScene : public cocos2d::Layer
 {
+	template<typename Type1, typename Type2>
+	bool _handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2);
 public:
 	PhysicsWorld* mWorld;
     static cocos2d::Scene* createScene();
@@ -39,6 +41,18 @@ public:
 	void addListener();
 	void update(float);
 	bool onContactBegin(PhysicsContact &contact);
+
+	void handleContact(Player* player, Bullet* bullet);
 };
 
 void resetPhysics(Node*, PhysicsBody*);
+
+template<typename T>
+bool isType(cocos2d::Sprite* ptr) {
+	return dynamic_cast<T*>(ptr) != 0;
+}
+
+template<typename T>
+T* castType(cocos2d::Sprite* ptr) {
+	return dynamic_cast<T*>(ptr);
+}
