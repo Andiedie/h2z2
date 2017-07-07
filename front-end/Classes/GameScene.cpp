@@ -42,6 +42,7 @@ bool GameScene::init()
 
 	auto background = Sprite::create("background.png");
 	gameArea = background->getContentSize();
+	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
 
@@ -90,7 +91,7 @@ bool GameScene::init()
 	// deal with other players' shots
 	GSocket->on("shoot", [=](GameSocket* client, Document& dom) {
 		auto& data = dom["data"];
-		auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble());
+		auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble(), data["velocity"].GetDouble(), 0.0f);
 		this->addChild(bullet, 1);
 	});
 
@@ -185,8 +186,6 @@ void GameScene::onMouseDown(EventMouse* event) {
 }
 
 bool GameScene::onContactBegin(PhysicsContact &contact) {
-	// TODO: better contacting item type check
-	//		 now only deal with bullet-player contact
 	auto node1 = (Sprite*)contact.getShapeA()->getBody()->getNode();
 	auto node2 = (Sprite*)contact.getShapeB()->getBody()->getNode();
 

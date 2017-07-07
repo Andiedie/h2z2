@@ -11,7 +11,7 @@ class Bullet : public cocos2d::Sprite {
 public:
 	static void initAutoRemove(cocos2d::Vec2 gameArea);
 	void autoRemove(float);
-	static Bullet* create(cocos2d::Vec2 pos, float angle, float velocity = 500.0f);
+	static Bullet* create(cocos2d::Vec2 pos, float angle, float velocity = 500.0f, float offset = 35.0f);
 
 	void broadcast() const;
 };

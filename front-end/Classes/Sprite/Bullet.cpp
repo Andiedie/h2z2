@@ -23,13 +23,13 @@ void Bullet::autoRemove(float) {
 
 Bullet::Bullet() {}
 
-Bullet* Bullet::create(Vec2 pos, float angle, float velocity) {
+Bullet* Bullet::create(Vec2 pos, float angle, float velocity, float offset) {
 	auto bullet = new (std::nothrow) Bullet();
 	if (bullet && bullet->initWithFile("bullet.png")) {
 		// init
 		auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 		bullet->setRotation(angle);
-		pos += 35.0f * normalizedDirection;
+		pos += offset * normalizedDirection;
 		bullet->setPosition(pos);
 		bullet->setScale(0.2f);
 
@@ -56,6 +56,7 @@ void Bullet::broadcast() const {
 	dom.AddMember("posX", this->getPosition().x, dom.GetAllocator());
 	dom.AddMember("posY", this->getPosition().y, dom.GetAllocator());
 	dom.AddMember("angle", this->getRotation(), dom.GetAllocator());
+	dom.AddMember("velocity", this->getPhysicsBody()->getVelocity().getLength(), dom.GetAllocator());
 
 	GSocket->sendEvent("broadcast", dom);
 }
