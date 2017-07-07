@@ -169,12 +169,19 @@ void GameScene::onMouseMove(EventMouse* event) {
 }
 
 void GameScene::onMouseDown(EventMouse* event) {
-	// create a bullet
-	auto bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
-	this->addChild(bullet, 1);
-
-	// broadcast shooting event
-	bullet->broadcast();
+	Bullet* bullet;
+	switch (event->getMouseButton()) {
+	case EventMouse::MouseButton::BUTTON_LEFT:
+		// create a bullet
+		bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
+		this->addChild(bullet, 1);
+		// broadcast shooting event
+		bullet->broadcast();
+		break;
+	case EventMouse::MouseButton::BUTTON_RIGHT:
+	default:
+		break;
+	}
 }
 
 bool GameScene::onContactBegin(PhysicsContact &contact) {
