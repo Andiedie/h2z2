@@ -20,13 +20,6 @@ int Weapon::getCurrent() {
 	return current;
 }
 
-void Weapon::reload() {
-	enable = false;
-	// »»µ¯Ê±¼äºó
-	// »»µ¯ ÉùÒô
-	enable = true;
-}
-
 void Weapon::broadCastToken() {
 	Document dom;
 	dom.SetObject();
@@ -40,5 +33,20 @@ void Weapon::broadCastDropped() {
 	dom.SetObject();
 	dom.AddMember("type", "dropWeapon", dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
+}
+
+void Weapon::setFireInterVal() {
+	inFireInterval = true;
+	runAction(Sequence::create(DelayTime::create(getFireInterval()), CallFunc::create([this]() {
+		this->inFireInterval = false;
+	}), nullptr));
+}
+
+void Weapon::reload() {
+	reloading = true;
+	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([this]() {
+		this->current = this->getMagazine();
+		this->reloading = false;
+	}), nullptr));
 }
 

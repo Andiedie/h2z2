@@ -150,6 +150,7 @@ bool GameScene::init() {
 }
 
 void GameScene::update(float dt) {
+	updateWeaponLabel();
 	using std::max;
 	using std::min;
 
@@ -175,6 +176,7 @@ void GameScene::update(float dt) {
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
+	Weapon* w;
 	switch (code) {
 		case cocos2d::EventKeyboard::KeyCode::KEY_W:
 			selfPlayer->setVelocityY(200.0f);
@@ -189,11 +191,16 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 			selfPlayer->setVelocityX(200.0f);
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_G:
-			updateWeaponLabel();
-			auto w = selfPlayer->dropWeapon();
+			w = selfPlayer->dropWeapon();
 			if (w != nullptr) {
 				this->addChild(w);
 				w->broadCastDropped();
+			}
+			// updateWeaponLabel();
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_R:
+			if (selfPlayer->weapon != nullptr) {
+				selfPlayer->weapon->reload();
 			}
 			break;
 	}
@@ -233,7 +240,7 @@ void GameScene::onMouseDown(EventMouse* event) {
 			if (selfPlayer->weapon != nullptr) {
 				selfPlayer->weapon->fire();
 			}
-			updateWeaponLabel();
+			// updateWeaponLabel();
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:
 		default:
@@ -298,7 +305,7 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 	if (player == selfPlayer && selfPlayer->weapon == nullptr) {
 		player->takeWeapon(weapon);
 		weapon->broadCastToken();
-		updateWeaponLabel();
+		// updateWeaponLabel();
 	}
 }
 

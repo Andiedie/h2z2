@@ -3,8 +3,8 @@ USING_NS_CC;
 using namespace std;
 
 string Uzi::file = "uzi";
-int Uzi::magazine = 50;
-float Uzi::fireInterval = 0.5;
+int Uzi::magazine = 40;
+float Uzi::fireInterval = 0.25;
 float Uzi::reloadTime = 3;
 int Uzi::damage = 8;
 
@@ -15,6 +15,8 @@ Uzi::Uzi(std::string id) {
 }
 
 void Uzi::fire() {
+	if (reloading || inFireInterval || current <= 0) return;
+	setFireInterVal();
 	auto player = getParent();
 	auto scene = player->getParent();
 	auto angle = player->getRotation();
@@ -32,10 +34,7 @@ void Uzi::fire() {
 	bullet = new Bullet(file, pos, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
-}
-
-void Uzi::reload() {
-
+	this->current = max(0, current - 3);
 }
 
 int Uzi::getMagazine() {
@@ -44,4 +43,12 @@ int Uzi::getMagazine() {
 
 int Uzi::getDamage() {
 	return damage;
+}
+
+float Uzi::getReloadTime() {
+	return reloadTime;
+}
+
+float Uzi::getFireInterval() {
+	return fireInterval;
 }

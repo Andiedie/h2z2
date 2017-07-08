@@ -11,8 +11,9 @@ private:
 public:
 	int getMagazine();
 	int getDamage();
+	float getReloadTime();
+	float getFireInterval();
 	Pistol(std::string id);
 	void fire();
-	void reload();
 };
 

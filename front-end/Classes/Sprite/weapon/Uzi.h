@@ -11,8 +11,9 @@ private:
 public:
 	int getMagazine();
 	int getDamage();
+	float getReloadTime();
+	float getFireInterval();
 	Uzi(std::string id);
 	void fire();
-	void reload();
 };
 
