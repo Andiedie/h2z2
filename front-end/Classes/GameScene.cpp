@@ -104,10 +104,9 @@ bool GameScene::init() {
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto who = data["from"].GetString();
 		auto dmg = data["damage"].GetDouble();
-		auto it = otherPlayers.find(who);
-		if (it != otherPlayers.end()) it->second->damage(dmg);
+		auto player = getPlayerById(data["from"].GetString());
+		if (player != nullptr) player->damage(dmg);
 	});
 
 	GSocket->on("dead", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -124,18 +123,17 @@ bool GameScene::init() {
 	});
 
 	GSocket->on("takeWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto who = data["from"].GetString();
-		auto it = otherPlayers.find(who);
-		if (it != otherPlayers.end()) {
-			Weapons::take(it->second, data["weaponId"].GetString());
+		auto player = getPlayerById(data["from"].GetString());
+		auto weapon = Weapons::getById(data["weaponId"].GetString());
+		if (player != nullptr && weapon != nullptr) {
+			player->takeWeapon(weapon);
 		}
 	});
 
 	GSocket->on("dropWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto who = data["from"].GetString();
-		auto it = otherPlayers.find(who);
-		if (it != otherPlayers.end()) {
-			Weapons::drop(it->second);
+		auto player = getPlayerById(data["from"].GetString());
+		if (player != nullptr) {
+			this->addChild(player->dropWeapon());
 		}
 	});
 
@@ -184,7 +182,11 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 			selfPlayer->setVelocityX(200.0f);
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_G:
-			Weapons::drop(selfPlayer, true);
+			auto w = selfPlayer->dropWeapon();
+			if (w != nullptr) {
+				this->addChild(w);
+				w->broadCastDropped();
+			}
 			break;
 	}
 }
@@ -287,8 +289,9 @@ void GameScene::handleContact(Player* player, HealPack* pack) {
 }
 
 void GameScene::handleContact(Player* player, Weapon* weapon) {
-	if (player == selfPlayer && selfPlayer->weaponId == "") {
-		Weapons::take(player, weapon->getId(), true);
+	if (player == selfPlayer && selfPlayer->weapon == nullptr) {
+		player->takeWeapon(weapon);
+		weapon->broadCastToken();
 	}
 }
 
@@ -326,4 +329,10 @@ bool GameScene::_handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2) {
 void resetPhysics(Node* node, PhysicsBody* body) {
 	node->removeComponent(node->getPhysicsBody());
 	node->setPhysicsBody(body);
+}
+
+Player* GameScene::getPlayerById(std::string id) {
+	auto it = otherPlayers.find(id);
+	if (it != otherPlayers.end()) return it->second;
+	return nullptr;
 }

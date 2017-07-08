@@ -110,3 +110,36 @@ void Player::broadcastDead() const {
 	dom.AddMember("type", "dead", dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }
+
+void Player::takeWeapon(Weapon* w) {
+	if (weapon != nullptr) return;
+	w->setScale(1.0f);
+	w->setRotation(0);
+	w->removeComponent(w->getPhysicsBody());
+	auto size = getContentSize();
+	w->setPosition(Vec2(size.width / 2, size.height + 39));
+	w->removeFromParent();
+	addChild(w);
+	weapon = w;
+}
+
+Weapon* Player::dropWeapon() {
+	if (weapon == nullptr) return nullptr;
+	auto w = weapon;
+	w->setScale(0.2f);
+	auto body = PhysicsBody::createBox(w->getContentSize() * w->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
+	body->setCategoryBitmask(0x00000003);
+	body->setCollisionBitmask(0x00000001);
+	body->setContactTestBitmask(0x00000001);
+	w->setPhysicsBody(body);
+	auto pos = getPosition();
+	auto angle = getRotation();
+	w->setRotation(angle);
+	angle = angle / 180.0 * M_PI;
+	float x = 100.0 * sin(angle) + pos.x;
+	float y = 100.0 * cos(angle) + pos.y;
+	w->setPosition(Vec2(x, y));
+	w->removeFromParent();
+	weapon = nullptr;
+	return w;
+}

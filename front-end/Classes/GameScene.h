@@ -48,6 +48,8 @@ public:
 	void gameOver();
 	void updateHpLabel(float hp);
 
+	Player* getPlayerById(std::string id);
+
 	void handleContact(Player* player, Bullet* bullet);
 	void handleContact(Player* player, HealPack* pack);
 	void handleContact(Player* player, Weapon* weapon);

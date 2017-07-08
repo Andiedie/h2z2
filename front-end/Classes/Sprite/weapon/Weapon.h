@@ -15,5 +15,7 @@ protected:
 public:
 	const std::string& getId();
 	void reload();
+	void broadCastToken();
+	void broadCastDropped();
 	virtual void fire() = 0;
 };
