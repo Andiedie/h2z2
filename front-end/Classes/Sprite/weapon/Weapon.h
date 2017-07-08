@@ -1,0 +1,19 @@
+#pragma once
+#include "cocos2d.h"
+#include <string>
+
+class Weapon : public cocos2d::Sprite {
+protected:
+	Weapon();
+	static std::string file;
+	static int magazine;
+	static float fireInterval;
+	static float reloadTime;
+	int current;
+	bool enable;
+	std::string id;
+public:
+	std::string getId();
+	void reload();
+	virtual void fire() = 0;
+};

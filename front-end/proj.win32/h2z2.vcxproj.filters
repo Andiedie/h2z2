@@ -16,6 +16,9 @@
     <Filter Include="src\Sprite">
       <UniqueIdentifier>{0ce9a00f-9016-42b3-ab32-a73c700e79d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Sprite\weapon">
+      <UniqueIdentifier>{abacb54c-5fcb-43ae-af12-b31ebde2f3ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,8 +48,14 @@
     <ClCompile Include="..\Classes\Sprite\HealPack.cpp">
       <Filter>src\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Sprite\Weapon.cpp">
-      <Filter>src\Sprite</Filter>
+    <ClCompile Include="..\Classes\Sprite\weapon\Weapon.cpp">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\weapon\Pistol.cpp">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\weapon\Weapons.cpp">
+      <Filter>src\Sprite\weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,8 +92,14 @@
     <ClInclude Include="..\Classes\Sprite\HealPack.h">
       <Filter>src\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Sprite\Weapon.h">
-      <Filter>src\Sprite</Filter>
+    <ClInclude Include="..\Classes\Sprite\weapon\Weapon.h">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\weapon\Weapons.h">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\weapon\Pistol.h">
+      <Filter>src\Sprite\weapon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
