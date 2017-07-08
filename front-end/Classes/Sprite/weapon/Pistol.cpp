@@ -7,7 +7,7 @@ float Pistol::fireInterval = 0.75;
 float Pistol::reloadTime = 1.5;
 
 Pistol::Pistol(string id) {
-	this->initWithFile(Pistol::file + ".png");
+	this->initWithFile("weapon/" + Pistol::file + ".png");
 	this->current = Pistol::magazine;
 	this->id = id;
 }
