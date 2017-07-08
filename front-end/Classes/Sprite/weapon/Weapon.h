@@ -13,7 +13,7 @@ protected:
 	bool enable;
 	std::string id;
 public:
-	std::string getId();
+	const std::string& getId();
 	void reload();
 	virtual void fire() = 0;
 };

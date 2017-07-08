@@ -6,6 +6,8 @@ map<string, Weapon*> Weapons::pool;
 
 Weapons::Weapons() {}
 
+Node* Weapons::node = nullptr;
+
 Weapon* Weapons::create(int type, string id, Vec2 pos) {
 	Weapon* w;
 	switch (type) {
@@ -27,35 +29,40 @@ Weapon* Weapons::create(int type, string id, Vec2 pos) {
 	return w;
 }
 
-void Weapons::take(Player* player, const string& id) {
+void Weapons::take(Player* player, const string& id, bool broadcast) {
 	auto it = pool.find(id);
 	if (it != pool.end()) {
 		auto w = it->second;
-		Document dom;
-		dom.SetObject();
-		dom.AddMember("type", "takeWeapon", dom.GetAllocator());
-		dom.AddMember("weaponId", StringRef(id.c_str()), dom.GetAllocator());
-		GSocket->sendEvent("broadcast", dom);
+		if (broadcast) {
+			Document dom;
+			dom.SetObject();
+			dom.AddMember("type", "takeWeapon", dom.GetAllocator());
+			dom.AddMember("weaponId", StringRef(w->getId().c_str()), dom.GetAllocator());
+			GSocket->sendEvent("broadcast", dom);
+		}
 		w->removeComponent(w->getPhysicsBody());
 		w->setScale(1.0f);
+		node = w->getParent();
+		w->removeFromParent();
 		player->addChild(w);
 		auto size = player->getContentSize();
 		w->setRotation(0);
 		w->setPosition(Vec2(size.width / 2, size.height + 39));
-		player->weaponId = id;
+		player->weaponId = w->getId();
 	}
 }
 
-Weapon* Weapons::drop(Player* player) {
+void Weapons::drop(Player* player, bool broadcast) {
 	auto id = player->weaponId;
 	auto it = pool.find(id);
 	if (it != pool.end()) {
 		auto w = it->second;
-		Document dom;
-		dom.SetObject();
-		dom.AddMember("type", "dropWeapon", dom.GetAllocator());
-		dom.AddMember("weaponId", StringRef(id.c_str()), dom.GetAllocator());
-		GSocket->sendEvent("broadcast", dom);
+		if (broadcast) {
+			Document dom;
+			dom.SetObject();
+			dom.AddMember("type", "dropWeapon", dom.GetAllocator());
+			GSocket->sendEvent("broadcast", dom);
+		}
 		w->setScale(0.2f);
 		auto body = PhysicsBody::createBox(w->getContentSize()*w->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		body->setCategoryBitmask(0x00000003);
@@ -70,9 +77,8 @@ Weapon* Weapons::drop(Player* player) {
 		float x = 100.0 * sin(angle);
 		float y = 100.0 * cos(angle);
 		w->setPosition(Vec2(pos.x + x, pos.y + y));
-		player->removeChild(w, false);
+		w->removeFromParent();
+		node->addChild(w);
 		player->weaponId = "";
-		return w;
 	}
-	return nullptr;
 }

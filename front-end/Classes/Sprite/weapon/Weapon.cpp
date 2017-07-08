@@ -5,7 +5,7 @@ using namespace std;
 
 Weapon::Weapon() {}
 
-string Weapon::getId() {
+const string& Weapon::getId() {
 	return this->id;
 }
 

@@ -6,48 +6,45 @@
 USING_NS_CC;
 using namespace std::chrono;
 
-Scene* GameScene::createScene()
-{
-    // 'scene' is an autorelease object
-    auto scene = Scene::createWithPhysics();
+Scene* GameScene::createScene() {
+	// 'scene' is an autorelease object
+	auto scene = Scene::createWithPhysics();
 
 	scene->getPhysicsWorld()->setAutoStep(false);
 	scene->getPhysicsWorld()->setGravity(Vec2::ZERO);
-    
-    // 'layer' is an autorelease object
-    auto gameLayer = GameScene::create();
+
+	// 'layer' is an autorelease object
+	auto gameLayer = GameScene::create();
 	gameLayer->mWorld = scene->getPhysicsWorld();
 	gameLayer->uiLayer = Layer::create();
 
-    // add layer as a child to scene
-    scene->addChild(gameLayer);
+	// add layer as a child to scene
+	scene->addChild(gameLayer);
 	scene->addChild(gameLayer->uiLayer, 1);
 
-    // return the scene
-    return scene;
+	// return the scene
+	return scene;
 }
 
 // on "init" you need to initialize your instance
-bool GameScene::init()
-{
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
+bool GameScene::init() {
+	//////////////////////////////
+	// 1. super init first
+	if (!Layer::init()) {
+		return false;
+	}
 
 	this->addListener();
-    
-    this->visibleSize = Director::getInstance()->getVisibleSize();
-    this->origin = Director::getInstance()->getVisibleOrigin();
+
+	this->visibleSize = Director::getInstance()->getVisibleSize();
+	this->origin = Director::getInstance()->getVisibleOrigin();
 
 	auto background = Sprite::create("background.png");
 	gameArea = background->getContentSize();
 	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
-	addChild(Weapons::create(0, "a", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
+	addChild(Weapons::create(0, "123456", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -66,8 +63,7 @@ bool GameScene::init()
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
-			}
-			else {
+			} else {
 				auto player = Player::create();
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
@@ -127,10 +123,25 @@ bool GameScene::init()
 		HealPack::remove(data["packId"].GetString());
 	});
 
+	GSocket->on("takeWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto who = data["from"].GetString();
+		auto it = otherPlayers.find(who);
+		if (it != otherPlayers.end()) {
+			Weapons::take(it->second, data["weaponId"].GetString());
+		}
+	});
+
+	GSocket->on("dropWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto who = data["from"].GetString();
+		auto it = otherPlayers.find(who);
+		if (it != otherPlayers.end()) {
+			Weapons::drop(it->second);
+		}
+	});
+
 	// manually update the physics world
 	this->schedule(schedule_selector(GameScene::update), 1.0f / FRAME_RATE, kRepeatForever, 0.1f);
-
-    return true;
+	return true;
 }
 
 void GameScene::update(float dt) {
@@ -160,43 +171,43 @@ void GameScene::update(float dt) {
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code) {
-	case cocos2d::EventKeyboard::KeyCode::KEY_W:
-		selfPlayer->setVelocityY(200.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		selfPlayer->setVelocityY(-200.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		selfPlayer->setVelocityX(-200.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		selfPlayer->setVelocityX(200.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_G:
-		addChild(Weapons::drop(selfPlayer));
-		break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_W:
+			selfPlayer->setVelocityY(200.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_S:
+			selfPlayer->setVelocityY(-200.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_A:
+			selfPlayer->setVelocityX(-200.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_D:
+			selfPlayer->setVelocityX(200.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_G:
+			Weapons::drop(selfPlayer, true);
+			break;
 	}
 }
 
 void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	auto body = selfPlayer->getPhysicsBody();
 	switch (code) {
-	case cocos2d::EventKeyboard::KeyCode::KEY_W:
-		if (body->getVelocity().y < 0.0f) break;
-		selfPlayer->setVelocityY(0.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		if (body->getVelocity().y > 0.0f) break;
-		selfPlayer->setVelocityY(0.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		if (body->getVelocity().x > 0.0f) break;
-		selfPlayer->setVelocityX(0.0f);
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		if (body->getVelocity().x < 0.0f) break;
-		selfPlayer->setVelocityX(0.0f);
-		break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_W:
+			if (body->getVelocity().y < 0.0f) break;
+			selfPlayer->setVelocityY(0.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_S:
+			if (body->getVelocity().y > 0.0f) break;
+			selfPlayer->setVelocityY(0.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_A:
+			if (body->getVelocity().x > 0.0f) break;
+			selfPlayer->setVelocityX(0.0f);
+			break;
+		case cocos2d::EventKeyboard::KeyCode::KEY_D:
+			if (body->getVelocity().x < 0.0f) break;
+			selfPlayer->setVelocityX(0.0f);
+			break;
 	}
 }
 
@@ -209,16 +220,16 @@ void GameScene::onMouseMove(EventMouse* event) {
 void GameScene::onMouseDown(EventMouse* event) {
 	Bullet* bullet;
 	switch (event->getMouseButton()) {
-	case EventMouse::MouseButton::BUTTON_LEFT:
-		// create a bullet
-		bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
-		this->addChild(bullet, 1);
-		// broadcast shooting event
-		bullet->broadcast();
-		break;
-	case EventMouse::MouseButton::BUTTON_RIGHT:
-	default:
-		break;
+		case EventMouse::MouseButton::BUTTON_LEFT:
+			// create a bullet
+			bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
+			this->addChild(bullet, 1);
+			// broadcast shooting event
+			bullet->broadcast();
+			break;
+		case EventMouse::MouseButton::BUTTON_RIGHT:
+		default:
+			break;
 	}
 }
 
@@ -277,8 +288,7 @@ void GameScene::handleContact(Player* player, HealPack* pack) {
 
 void GameScene::handleContact(Player* player, Weapon* weapon) {
 	if (player == selfPlayer && selfPlayer->weaponId == "") {
-		removeChild(weapon, false);
-		Weapons::take(selfPlayer, weapon->getId());
+		Weapons::take(player, weapon->getId(), true);
 	}
 }
 
