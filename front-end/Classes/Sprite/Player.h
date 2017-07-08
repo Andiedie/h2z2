@@ -2,11 +2,13 @@
 
 #include "utils\global.h"
 #include "cocos2d.h"
+#include "Weapon.h"
 #include <algorithm>
 
 class Player : public cocos2d::Sprite {
 	const static float maxHp;
 	float hp = 200.0f;
+	Weapon* weapon = nullptr;
 
 	Player();
 public:
@@ -21,6 +23,10 @@ public:
 	void setHp(float _hp);
 	void heal(float _hp);
 	bool damage(float _hp); // return true if alive
+	Weapon* dropWeapon();
+	void takeWeapon(Weapon* w);
+	Weapon* getWeapon();
+
 
 	static Player* create(cocos2d::Vec2 pos = cocos2d::Vec2::ZERO);
 };

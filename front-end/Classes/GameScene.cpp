@@ -47,6 +47,7 @@ bool GameScene::init()
 	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
+	addChild(Weapon::create(Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -171,6 +172,11 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
 		selfPlayer->setVelocityX(200.0f);
 		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_G:
+		auto weapon = selfPlayer->dropWeapon();
+		if (weapon != nullptr)
+			this->addChild(weapon);
+		break;
 	}
 }
 
@@ -226,6 +232,8 @@ bool GameScene::onContactBegin(PhysicsContact &contact) {
 	if (_handleContact<Player, Bullet>(node1, node2)) return false;
 	// handle player-healpack collision
 	if (_handleContact<Player, HealPack>(node1, node2)) return false;
+	// handle player-weapon collision
+	if (_handleContact<Player, Weapon>(node1, node2)) return false;
 
 	return false;
 }
@@ -267,6 +275,13 @@ void GameScene::handleContact(Player* player, HealPack* pack) {
 	updateHpLabel(player->getHp());
 	pack->broadcastEaten();
 	HealPack::remove(pack->getId());
+}
+
+void GameScene::handleContact(Player* player, Weapon* weapon) {
+	if (player == selfPlayer && selfPlayer->getWeapon() == nullptr) {
+		this->removeChild(weapon, false);
+		player->takeWeapon(weapon);
+	}
 }
 
 void GameScene::gameOver() {

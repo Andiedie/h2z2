@@ -45,6 +45,9 @@
     <ClCompile Include="..\Classes\Sprite\HealPack.cpp">
       <Filter>src\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\Weapon.cpp">
+      <Filter>src\Sprite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -78,6 +81,9 @@
       <Filter>src\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\HealPack.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Weapon.h">
       <Filter>src\Sprite</Filter>
     </ClInclude>
   </ItemGroup>

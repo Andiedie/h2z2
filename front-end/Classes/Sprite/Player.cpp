@@ -110,3 +110,34 @@ void Player::broadcastDead() const {
 	dom.AddMember("type", "dead", dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }
+
+void Player::takeWeapon(Weapon* w) {
+	w->token();
+	this->addChild(w);
+	auto size = this->getContentSize();
+	w->setRotation(0);
+	w->setPosition(Vec2(size.width / 2, size.height + 39));
+	this->weapon = w;
+}
+
+Weapon* Player::dropWeapon() {
+	auto w = this->weapon;
+	if (w != nullptr) {
+		w->dropped();
+		auto pos = this->getPosition();
+		auto angle = this->getRotation();
+		w->setRotation(angle);
+		if (angle > 270) angle = angle - 360.0;
+		angle = angle / 180.0 * M_PI;
+		float x = 100.0 * sin(angle);
+		float y = 100.0 * cos(angle);
+		w->setPosition(Vec2(pos.x + x, pos.y + y));
+		this->removeChild(w, false);
+		this->weapon = nullptr;
+	}
+	return w;
+}
+
+Weapon* Player::getWeapon() {
+	return this->weapon;
+}
