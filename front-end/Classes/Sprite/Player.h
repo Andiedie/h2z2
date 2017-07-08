@@ -24,8 +24,6 @@ public:
 	bool damage(float _hp); // return true if alive
 	void takeWeapon(Weapon* w);
 	Weapon* dropWeapon();
-	//void fire();
-	//void reload();
 
 	static Player* create(cocos2d::Vec2 pos = cocos2d::Vec2::ZERO);
 };

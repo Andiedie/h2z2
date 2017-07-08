@@ -135,10 +135,9 @@ Weapon* Player::dropWeapon() {
 	auto pos = getPosition();
 	auto angle = getRotation();
 	w->setRotation(angle);
-	angle = angle / 180.0 * M_PI;
-	float x = 100.0 * sin(angle) + pos.x;
-	float y = 100.0 * cos(angle) + pos.y;
-	w->setPosition(Vec2(x, y));
+	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
+	pos += 100.0f * normalizedDirection;
+	w->setPosition(pos);
 	w->removeFromParent();
 	weapon = nullptr;
 	return w;

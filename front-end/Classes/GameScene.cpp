@@ -99,8 +99,8 @@ bool GameScene::init() {
 
 	// deal with other players' shots
 	GSocket->on("shoot", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble(), data["velocity"].GetDouble(), 0.0f);
-		this->addChild(bullet, 1);
+		//auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble(), data["velocity"].GetDouble(), 0.0f);
+		//this->addChild(bullet, 1);
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -223,11 +223,10 @@ void GameScene::onMouseDown(EventMouse* event) {
 	Bullet* bullet;
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
-			// create a bullet
-			bullet = Bullet::create(selfPlayer->getPosition(), selfPlayer->getRotation());
-			this->addChild(bullet, 1);
-			// broadcast shooting event
-			bullet->broadcast();
+			if (selfPlayer->weapon != nullptr) {
+				selfPlayer->weapon->fire();
+			}
+			//bullet->broadcast();
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:
 		default:

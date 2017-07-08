@@ -1,4 +1,5 @@
 #include "Pistol.h"
+USING_NS_CC;
 using namespace std;
 
 string Pistol::file = "pistol";
@@ -13,5 +14,11 @@ Pistol::Pistol(string id) {
 }
 
 void Pistol::fire() {
-
+	auto player = getParent();
+	auto scene = player->getParent();
+	auto angle = player->getRotation();
+	auto pos = player->getPosition();
+	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
+	pos += 45.0f * normalizedDirection;
+	scene->addChild(new Bullet(file, pos, player->getRotation(), 500.0f));
 }

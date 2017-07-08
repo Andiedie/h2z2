@@ -1,5 +1,6 @@
 #pragma once
 #include "cocos2d.h"
+#include "../Bullet.h"
 #include <string>
 
 class Weapon : public cocos2d::Sprite {
