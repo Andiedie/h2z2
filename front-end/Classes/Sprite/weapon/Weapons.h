@@ -1,5 +1,6 @@
 #pragma once
 #include "Pistol.h"
+#include "Uzi.h"
 
 class Weapons {
 private:

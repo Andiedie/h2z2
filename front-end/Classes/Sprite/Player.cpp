@@ -6,7 +6,7 @@
 USING_NS_CC;
 using namespace std::chrono;
 
-const float Player::maxHp = 200.0f;
+const int Player::maxHp = 200;
 
 Player::Player() {}
 
@@ -89,13 +89,13 @@ void Player::broadcastHit(float dmg) const {
 	GSocket->sendEvent("broadcast", dom);
 }
 
-float Player::getHp() const { return hp; }
+int Player::getHp() const { return hp; }
 
-void Player::setHp(float _hp) {
+void Player::setHp(int _hp) {
 	hp = std::min(_hp, maxHp);
 }
 
-void Player::heal(float _hp) {
+void Player::heal(int _hp) {
 	hp = std::min(hp + _hp, maxHp);
 }
 

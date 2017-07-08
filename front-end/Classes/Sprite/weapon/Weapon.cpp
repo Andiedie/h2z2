@@ -6,8 +6,18 @@ using namespace std;
 
 Weapon::Weapon() {}
 
+std::string Weapon::file;
+int Weapon::magazine;
+float Weapon::fireInterval;
+float Weapon::reloadTime;
+int Weapon::damage;
+
 const string& Weapon::getId() {
 	return this->id;
+}
+
+int Weapon::getCurrent() {
+	return current;
 }
 
 void Weapon::reload() {

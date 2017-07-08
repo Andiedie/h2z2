@@ -46,6 +46,6 @@ void Bullet::broadcast() const {
 	dom.AddMember("posX", this->getPosition().x, dom.GetAllocator());
 	dom.AddMember("posY", this->getPosition().y, dom.GetAllocator());
 	dom.AddMember("angle", this->getRotation(), dom.GetAllocator());
-	dom.AddMember("velocity", this->getPhysicsBody()->getVelocity().getLength(), dom.GetAllocator());
+	dom.AddMember("speed", this->getPhysicsBody()->getVelocity().getLength(), dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }

@@ -12,6 +12,9 @@ Weapon* Weapons::create(int type, string id, Vec2 pos) {
 		case 0:
 			w = new Pistol(id);
 			break;
+		case 1:
+			w = new Uzi(id);
+			break;
 		default:
 			w = nullptr;
 			break;

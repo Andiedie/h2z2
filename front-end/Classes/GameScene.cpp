@@ -45,9 +45,16 @@ bool GameScene::init() {
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
 	addChild(Weapons::create(0, "123456", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
+	addChild(Weapons::create(1, "123457", Vec2(gameArea.x / 2, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		hpLabel = Label::createWithSystemFont("", "Arial", 30);
+		hpLabel->setPosition(visibleSize.width / 2, 20.0f);
+		uiLayer->addChild(hpLabel);
+		weaponLabel = Label::createWithSystemFont("", "Arial", 30);
+		weaponLabel->setPosition(visibleSize.width - 70.0f, 20.0f);
+		uiLayer->addChild(weaponLabel);
 		this->selfId = data["selfId"].GetString();
 		auto& arr = data["players"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
@@ -56,10 +63,7 @@ bool GameScene::init() {
 				auto& selfPos = data["selfPos"];
 				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
-				hpLabel = Label::createWithSystemFont("", "Arial", 30);;
-				hpLabel->setPosition(visibleSize.width / 2, 20.0f);
-				updateHpLabel(selfPlayer->getHp());
-				uiLayer->addChild(hpLabel);
+				updateHpLabel();
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
@@ -98,9 +102,12 @@ bool GameScene::init() {
 	});
 
 	// deal with other players' shots
-	GSocket->on("shoot", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		//auto bullet = Bullet::create(Vec2(data["posX"].GetDouble(), data["posY"].GetDouble()), data["angle"].GetDouble(), data["velocity"].GetDouble(), 0.0f);
-		//this->addChild(bullet, 1);
+	GSocket->on("bullet", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto file = data["file"].GetString();
+		auto pos = Vec2(data["posX"].GetDouble(), data["posY"].GetDouble());
+		auto angle = data["angle"].GetDouble();
+		auto speed = data["speed"].GetDouble();
+		addChild(new Bullet(file, pos, angle, speed));
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -182,6 +189,7 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 			selfPlayer->setVelocityX(200.0f);
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_G:
+			updateWeaponLabel();
 			auto w = selfPlayer->dropWeapon();
 			if (w != nullptr) {
 				this->addChild(w);
@@ -220,13 +228,12 @@ void GameScene::onMouseMove(EventMouse* event) {
 }
 
 void GameScene::onMouseDown(EventMouse* event) {
-	Bullet* bullet;
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
 				selfPlayer->weapon->fire();
 			}
-			//bullet->broadcast();
+			updateWeaponLabel();
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:
 		default:
@@ -276,13 +283,13 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 			player->broadcastDead();
 			gameOver();
 		}
-		updateHpLabel(player->getHp());
+		updateHpLabel();
 	}
 }
 
 void GameScene::handleContact(Player* player, HealPack* pack) {
 	player->heal(pack->getHp());
-	updateHpLabel(player->getHp());
+	updateHpLabel();
 	pack->broadcastEaten();
 	HealPack::remove(pack->getId());
 }
@@ -291,6 +298,7 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 	if (player == selfPlayer && selfPlayer->weapon == nullptr) {
 		player->takeWeapon(weapon);
 		weapon->broadCastToken();
+		updateWeaponLabel();
 	}
 }
 
@@ -306,10 +314,21 @@ void GameScene::gameOver() {
 	body->setCategoryBitmask(0x00000000);
 }
 
-void GameScene::updateHpLabel(float hp) {
+void GameScene::updateHpLabel() {
 	static char buffer[20];
-	sprintf(buffer, "hp: %.2f", hp);
+	sprintf(buffer, "hp: %d", selfPlayer->getHp());
 	hpLabel->setString(buffer);
+}
+
+void GameScene::updateWeaponLabel() {
+	static char buffer[40];
+	auto w = selfPlayer->weapon;
+	if (w == nullptr) {
+		weaponLabel->setString("");
+	} else {
+		sprintf(buffer, "gun: %d/%d", w->getCurrent(), w->getMagazine());
+		weaponLabel->setString(buffer);
+	}
 }
 
 template<typename Type1, typename Type2>

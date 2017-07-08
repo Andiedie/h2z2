@@ -1,7 +1,7 @@
 #pragma once
 #include "Weapon.h"
 
-class Pistol : public Weapon {
+class Uzi : public Weapon {
 private:
 	static std::string file;
 	static int magazine;
@@ -11,7 +11,7 @@ private:
 public:
 	int getMagazine();
 	int getDamage();
-	Pistol(std::string id);
+	Uzi(std::string id);
 	void fire();
 	void reload();
 };

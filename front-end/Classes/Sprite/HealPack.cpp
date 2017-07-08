@@ -41,7 +41,7 @@ void HealPack::broadcastEaten() const {
 	GSocket->sendEvent("broadcast", dom);
 }
 
-float HealPack::getHp() const { return hp; }
+int HealPack::getHp() const { return hp; }
 
 const string& HealPack::getId() const { return id; }
 

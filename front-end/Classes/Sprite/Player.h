@@ -6,8 +6,8 @@
 #include <algorithm>
 
 class Player : public cocos2d::Sprite {
-	const static float maxHp;
-	float hp = 200.0f;
+	const static int maxHp;
+	int hp = 200;
 	Player();
 public:
 	Weapon* weapon = nullptr;
@@ -18,9 +18,9 @@ public:
 	void setVelocityY(float vy);
 	void broadcastHit(float dmg) const;
 	void broadcastDead() const;
-	float getHp() const;
-	void setHp(float _hp);
-	void heal(float _hp);
+	int getHp() const;
+	void setHp(int _hp);
+	void heal(int _hp);
 	bool damage(float _hp); // return true if alive
 	void takeWeapon(Weapon* w);
 	Weapon* dropWeapon();
