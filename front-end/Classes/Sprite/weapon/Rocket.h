@@ -13,6 +13,7 @@ public:
 	int getDamage();
 	float getReloadTime();
 	float getFireInterval();
+	std::string getFile();
 	Rocket(std::string id);
 	void fire();
 };

@@ -4,8 +4,8 @@ using namespace std;
 
 string Rocket::file = "rocket";
 int Rocket::magazine = 8;
-float Rocket::fireInterval = 0.5f;
-float Rocket::reloadTime = 1.5f;
+float Rocket::fireInterval = 1.5f;
+float Rocket::reloadTime = 2.0f;
 int Rocket::damage = 150;
 
 Rocket::Rocket(std::string id) {
@@ -23,9 +23,9 @@ void Rocket::fire() {
 	auto pos = player->getPosition();
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * normalizedDirection;
-	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 600.0f);
+	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 1000.0f);
+	bullet->setScale(0.7f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	this->current = max(0, current - 1);
 }
 
@@ -44,3 +44,8 @@ float Rocket::getReloadTime() {
 float Rocket::getFireInterval() {
 	return fireInterval;
 }
+
+string Rocket::getFile() {
+	return file;
+}
+

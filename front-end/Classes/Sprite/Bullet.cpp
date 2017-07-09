@@ -38,16 +38,3 @@ Bullet::Bullet(std::string file, cocos2d::Vec2 pos, int damage, float angle, flo
 	this->autorelease();
 	this->schedule(schedule_selector(Bullet::autoRemove), 1.0f, kRepeatForever, 3.0f);
 }
-
-void Bullet::broadcast() const {
-	Document dom;
-	dom.SetObject();
-	dom.AddMember("type", "bullet", dom.GetAllocator());
-	dom.AddMember("file", StringRef(file.c_str()), dom.GetAllocator());
-	dom.AddMember("posX", this->getPosition().x, dom.GetAllocator());
-	dom.AddMember("posY", this->getPosition().y, dom.GetAllocator());
-	dom.AddMember("angle", this->getRotation(), dom.GetAllocator());
-	dom.AddMember("damage", this->damage, dom.GetAllocator());
-	dom.AddMember("speed", this->getPhysicsBody()->getVelocity().getLength(), dom.GetAllocator());
-	GSocket->sendEvent("broadcast", dom);
-}

@@ -4,7 +4,7 @@ using namespace std;
 
 string Shotgun::file = "shotgun";
 int Shotgun::magazine = 25;
-float Shotgun::fireInterval = 0.6f;
+float Shotgun::fireInterval = 1.0f;
 float Shotgun::reloadTime = 2.0f;
 int Shotgun::damage = 21;
 
@@ -15,6 +15,7 @@ Shotgun::Shotgun(std::string id) {
 }
 
 void Shotgun::fire() {
+	CCLOG("%d %d %d", reloading, inFireInterval, current);
 	if (reloading || inFireInterval || current <= 0) return;
 	setFireInterVal();
 	auto player = getParent();
@@ -29,19 +30,14 @@ void Shotgun::fire() {
 	auto b5 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)), cosf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)));
 	auto bullet = new Bullet(file, pos + 45.0f * b1, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	bullet = new Bullet(file, pos + 45.0f * b2, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	bullet = new Bullet(file, pos + 45.0f * b3, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	bullet = new Bullet(file, pos + 45.0f * b4, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	bullet = new Bullet(file, pos + 45.0f * b5, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	this->current = max(0, current - 5);
 }
 
@@ -60,3 +56,8 @@ float Shotgun::getReloadTime() {
 float Shotgun::getFireInterval() {
 	return fireInterval;
 }
+
+string Shotgun::getFile() {
+	return file;
+}
+

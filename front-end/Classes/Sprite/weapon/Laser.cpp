@@ -4,9 +4,9 @@ using namespace std;
 
 string Laser::file = "laser";
 int Laser::magazine = 40;
-float Laser::fireInterval = 0.2f;
-float Laser::reloadTime = 1.0f;
-int Laser::damage = 30;
+float Laser::fireInterval = 0.7f;
+float Laser::reloadTime = 1.3f;
+int Laser::damage = 25;
 
 Laser::Laser(std::string id) {
 	this->initWithFile("weapon/" + Laser::file + ".png");
@@ -28,7 +28,6 @@ void Laser::fire() {
 		auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 		pos += 20.0f * normalizedDirection;
 		scene->addChild(bullet);
-		bullet->broadcast();
 	}
 	this->current = max(0, current - number);
 }
@@ -48,3 +47,8 @@ float Laser::getReloadTime() {
 float Laser::getFireInterval() {
 	return fireInterval;
 }
+
+string Laser::getFile() {
+	return file;
+}
+

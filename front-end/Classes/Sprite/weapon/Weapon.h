@@ -2,6 +2,8 @@
 #include "cocos2d.h"
 #include "../Bullet.h"
 #include <string>
+#include "SimpleAudioEngine.h"
+#define AUDIO CocosDenshion::SimpleAudioEngine::getInstance()
 
 class Weapon : public cocos2d::Sprite {
 protected:
@@ -17,6 +19,7 @@ protected:
 public:
 	int current;
 	const std::string& getId();
+	virtual std::string getFile() = 0;
 	virtual int getMagazine() = 0;
 	virtual int getDamage() = 0;
 	virtual float getReloadTime() = 0;
@@ -25,4 +28,5 @@ public:
 	virtual void fire() = 0;
 	void broadCastToken();
 	void broadCastDropped();
+	void broadCastFire();
 };
