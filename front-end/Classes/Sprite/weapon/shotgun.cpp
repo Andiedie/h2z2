@@ -14,8 +14,8 @@ Shotgun::Shotgun(std::string id) {
 	this->id = id;
 }
 
-void Shotgun::fire() {
-	if (reloading || inFireInterval || current <= 0) return;
+bool Shotgun::fire(bool force) {
+	if (!force && (reloading || inFireInterval || current <= 0)) return false;
 	setFireInterVal();
 	auto player = getParent();
 	auto scene = player->getParent();
@@ -38,6 +38,7 @@ void Shotgun::fire() {
 	bullet = new Bullet(file, pos + 45.0f * b5, damage, player->getRotation(), 600.0f);
 	scene->addChild(bullet);
 	this->current = max(0, current - 5);
+	return true;
 }
 
 int Shotgun::getMagazine() {

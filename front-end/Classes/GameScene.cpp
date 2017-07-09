@@ -113,7 +113,7 @@ bool GameScene::init() {
 	// deal with other players' shots
 	GSocket->on("fire", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto weapon = Weapons::getById(data["weaponId"].GetString());
-		weapon->fire();
+		weapon->fire(true);
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -243,7 +243,8 @@ void GameScene::onMouseDown(EventMouse* event) {
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
-				selfPlayer->weapon->fire();
+				if (selfPlayer->weapon->fire())
+					selfPlayer->weapon->broadCastFire();
 			}
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:

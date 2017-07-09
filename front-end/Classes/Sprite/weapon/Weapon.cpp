@@ -33,7 +33,6 @@ void Weapon::broadCastDropped() {
 
 void Weapon::setFireInterVal() {
 	if (inFireInterval) return;
-	broadCastFire();
 	inFireInterval = true;
 	runAction(Sequence::create(DelayTime::create(getFireInterval()), CallFunc::create([this]() {
 		this->inFireInterval = false;
@@ -74,4 +73,5 @@ void Weapon::init() {
 	AUDIO->preloadEffect("sound/rocket.wav");
 	AUDIO->preloadEffect("sound/shotgun.wav");
 	AUDIO->preloadEffect("sound/uzi.wav");
+	AUDIO->preloadEffect("sound/reload.wav");
 }

@@ -14,8 +14,8 @@ Laser::Laser(std::string id) {
 	this->id = id;
 }
 
-void Laser::fire() {
-	if (reloading || inFireInterval || current <= 0) return;
+bool Laser::fire(bool force) {
+	if (!force && (reloading || inFireInterval || current <= 0)) return false;
 	setFireInterVal();
 	auto player = getParent();
 	auto scene = player->getParent();
@@ -30,6 +30,7 @@ void Laser::fire() {
 		scene->addChild(bullet);
 	}
 	this->current = max(0, current - number);
+	return true;
 }
 
 int Laser::getMagazine() {
