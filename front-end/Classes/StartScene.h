@@ -3,7 +3,6 @@
 #include "cocos2d.h"
 #include "utils\global.h"
 #include "ui\UITextField.h"
-#include "ui\UIEditBox\UIEditBox.h"
 
 USING_NS_CC;
 
