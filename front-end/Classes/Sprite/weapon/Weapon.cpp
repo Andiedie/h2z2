@@ -28,6 +28,7 @@ void Weapon::broadCastDropped() {
 	Document dom;
 	dom.SetObject();
 	dom.AddMember("type", "dropWeapon", dom.GetAllocator());
+	dom.AddMember("current", current, dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }
 

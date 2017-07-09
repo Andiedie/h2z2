@@ -146,7 +146,9 @@ bool GameScene::init() {
 	GSocket->on("dropWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto player = getPlayerById(data["from"].GetString());
 		if (player != nullptr) {
-			this->addChild(player->dropWeapon());
+			auto w = player->dropWeapon();
+			w->current = data["current"].GetInt();
+			this->addChild(w);
 		}
 	});
 
