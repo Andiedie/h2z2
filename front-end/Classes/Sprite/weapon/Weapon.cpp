@@ -42,6 +42,7 @@ void Weapon::setFireInterVal() {
 void Weapon::reload() {
 	if (reloading) return;
 	reloading = true;
+	this->current = -1; // indicating reload state
 	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([this]() {
 		this->current = this->getMagazine();
 		this->reloading = false;
