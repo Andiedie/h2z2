@@ -29,7 +29,7 @@ Weapon* Weapons::create(int type, string id, Vec2 pos) {
 			break;
 	}
 	if (w != nullptr) {
-		w->setScale(0.2f);
+		w->setScale(0.3f);
 		w->setPosition(pos);
 		auto body = PhysicsBody::createBox(w->getContentSize()*w->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		body->setCategoryBitmask(0x00000003);

@@ -25,7 +25,7 @@ Bullet::Bullet(std::string file, cocos2d::Vec2 pos, int damage, float angle, flo
 	this->damage = damage;
 	this->file = file;
 	this->initWithFile("bullet/" + file + ".png");
-	this->setScale(0.2f);
+	this->setScale(0.3f);
 	this->setPosition(pos);
 	this->setRotation(angle);
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));

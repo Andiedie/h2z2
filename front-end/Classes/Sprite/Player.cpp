@@ -14,7 +14,7 @@ Player* Player::create(Vec2 pos) {
 	auto player = new (std::nothrow) Player();
 	if (player && player->initWithFile("player.png")) {
 		// init
-		player->setScale(0.2f);
+		player->setScale(0.3f);
 		player->setPosition(pos);
 		auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		playerBody->setCategoryBitmask(0x00000001);
@@ -128,7 +128,7 @@ Weapon* Player::dropWeapon() {
 	if (weapon == nullptr) return nullptr;
 	auto w = weapon;
 	w->reset();
-	w->setScale(0.2f);
+	w->setScale(0.3f);
 	auto body = PhysicsBody::createBox(w->getContentSize() * w->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 	body->setCategoryBitmask(0x00000003);
 	body->setCollisionBitmask(0x00000001);

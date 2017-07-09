@@ -1,6 +1,8 @@
 #pragma once
 
 #include "HealPack.h"
+#include "SimpleAudioEngine.h"
+#define AUDIO CocosDenshion::SimpleAudioEngine::getInstance()
 
 USING_NS_CC;
 using namespace std;
@@ -16,14 +18,14 @@ HealPack* HealPack::create(rapidjson::GenericValue<UTF8<>> &data) {
 		pack->setPosition(data["posX"].GetDouble(), data["posY"].GetDouble());
 		pack->id = data["id"].GetString();
 		pack->hp = data["hp"].GetDouble();
-		pack->setScale(0.4f);
+		pack->setScale(0.3f);
 
 		auto body = PhysicsBody::createBox(pack->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		body->setCategoryBitmask(0x00000004);
 		body->setCollisionBitmask(0x00000001); // only collides with player
 		body->setContactTestBitmask(0x00000001);
 		pack->setPhysicsBody(body);
-		
+
 		pool.insert(make_pair(pack->id, pack));
 		pack->autorelease();
 		return pack;
@@ -33,11 +35,11 @@ HealPack* HealPack::create(rapidjson::GenericValue<UTF8<>> &data) {
 }
 
 void HealPack::broadcastEaten() const {
+	AUDIO->playEffect("sound/heal.wav");
 	Document dom;
 	dom.SetObject();
 	dom.AddMember("type", "eatPack", dom.GetAllocator());
 	dom.AddMember("packId", StringRef(id.c_str()), dom.GetAllocator());
-
 	GSocket->sendEvent("broadcast", dom);
 }
 

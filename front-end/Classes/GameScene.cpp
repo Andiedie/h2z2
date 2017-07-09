@@ -344,6 +344,7 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 }
 
 void GameScene::handleContact(Player* player, HealPack* pack) {
+	if (player->getHp() == Player::maxHp) return;
 	player->heal(pack->getHp());
 	updateHpLabel();
 	pack->broadcastEaten();

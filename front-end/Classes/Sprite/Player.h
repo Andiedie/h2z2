@@ -6,10 +6,10 @@
 #include <algorithm>
 
 class Player : public cocos2d::Sprite {
-	const static int maxHp;
 	int hp = 200;
 	Player();
 public:
+	const static int maxHp;
 	Weapon* weapon = nullptr;
 	virtual rapidjson::Document createSyncData() const;
 	virtual void sync(rapidjson::GenericValue<rapidjson::UTF8<>> &data);
