@@ -12,7 +12,8 @@ protected:
 	static float fireInterval;
 	static float reloadTime;
 	static int damage;
-	bool reloading = false, inFireInterval = false;
+	bool inFireInterval = false;
+	unsigned int reloading = 0;
 	std::string id;
 	Weapon();
 	void setFireInterVal();
@@ -25,6 +26,7 @@ public:
 	virtual float getReloadTime() = 0;
 	virtual float getFireInterval() = 0;
 	void reload();
+	void reset();
 	virtual void fire() = 0;
 	void broadCastToken();
 	void broadCastDropped();

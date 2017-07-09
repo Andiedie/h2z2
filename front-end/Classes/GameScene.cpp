@@ -61,12 +61,12 @@ bool GameScene::init() {
 				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
-				/*测试用的枪 懒得满图找
+				//测试用的枪 懒得满图找
 				addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
 				addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
 				addChild(Weapons::create(2, "2", selfPlayer->getPosition() + Vec2(0, 100)));
 				addChild(Weapons::create(3, "3", selfPlayer->getPosition() + Vec2(100, 0)));
-				addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));*/
+				addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));

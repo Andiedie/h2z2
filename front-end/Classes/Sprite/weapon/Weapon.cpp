@@ -42,13 +42,20 @@ void Weapon::setFireInterVal() {
 
 void Weapon::reload() {
 	if (reloading || current == getMagazine()) return;
-	auto id = AUDIO->playEffect("sound/reload.mp3", true);
-	reloading = true;
-	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([id, this]() {
-		AUDIO->stopEffect(id);
+	reloading = AUDIO->playEffect("sound/reload.mp3", true);
+	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([this]() {
+		AUDIO->stopEffect(this->reloading);
 		this->current = this->getMagazine();
-		this->reloading = false;
+		this->reloading = 0;
 	}), nullptr));
+}
+
+void Weapon::reset() {
+	if (reloading) {
+		AUDIO->stopEffect(this->reloading);
+		this->reloading = 0;
+	}
+	this->inFireInterval = false;
 }
 
 void Weapon::broadCastFire() {
