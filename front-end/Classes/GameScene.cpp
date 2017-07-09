@@ -344,7 +344,6 @@ void GameScene::updateWeaponLabel() {
 		else sprintf(buffer, "ammo: %d/%d", w->current, w->getMagazine());
 		weaponLabel->setString(buffer);
 	}
-	// weaponLabel->setPosition(visibleSize.width - 70.0f, 20.0f);
 	weaponLabel->setPosition(visibleSize.width - weaponLabel->getContentSize().width / 2 - 10.0f, 20.0f);
 }
 

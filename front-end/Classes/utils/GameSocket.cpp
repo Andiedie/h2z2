@@ -7,7 +7,6 @@ USING_NS_CC;
 GameSocket* GameSocket::instance = nullptr;
 
 GameSocket* GameSocket::getInstance() {
-	if (!instance) instance = new GameSocket();
 	return instance;
 }
 
@@ -15,6 +14,17 @@ GameSocket::GameSocket() {
 	socket = new WebSocket();
 	socket->init(*this, SERVER_URL);
 }
+
+void GameSocket::init(std::string host, std::string port) {
+	instance = new GameSocket(host, port);
+}
+
+GameSocket::GameSocket(std::string host, std::string port) {
+	char buffer[50];
+	sprintf(buffer, "ws://%s:%s", host.c_str(), port.c_str());
+	socket = new WebSocket();
+	socket->init(*this, buffer);
+};
 
 void GameSocket::onOpen(WebSocket* ws) {
 	CCLOG("GameSocket: open");

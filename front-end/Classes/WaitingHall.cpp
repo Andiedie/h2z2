@@ -1,6 +1,8 @@
 #include "WaitingHall.h"
 #include "GameScene.h"
 #include "utils\global.h"
+#include "ui\UITextField.h"
+#include "ui\UIEditBox\UIEditBox.h"
 
 USING_NS_CC;
 
@@ -28,20 +30,20 @@ bool WaitingHall::init()
     {
         return false;
     }
-    
+
+	auto title = Label::create("H2Z2", "Microsoft YaHei UI", 96);
+	title->setPosition(visibleSize.width / 2, visibleSize.height - 70.0f);
+	this->addChild(title);
+
     this->visibleSize = Director::getInstance()->getVisibleSize();
     this->origin = Director::getInstance()->getVisibleOrigin();
-
-	GSocket->onConnection([](GameSocket* client) {
-
-	});
 
 	GSocket->on("error", [](GameSocket* client, GenericValue<UTF8<>>& data) {
 		CCLOG("manual-error: %s", data.GetString());
 	});
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
-	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 50.0f);
 	playerLabel->setString("this is label");
 
 	GSocket->on("playerList", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
@@ -56,23 +58,13 @@ bool WaitingHall::init()
 	auto menu = Menu::create();
 	menu->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 200.0f);
 	auto startGameButton = MenuItemFont::create("START", [=](Ref* sender) {
-		CCLOG("clicked");
 		GSocket->sendEvent("requireGameStart");
 	});
 	menu->addChild(startGameButton);
-
+	
 	this->addChild(playerLabel, 1);
+
 	this->addChild(menu, 2);
 
     return true;
-}
-
-
-void WaitingHall::menuCloseCallback(Ref* pSender)
-{
-    Director::getInstance()->end();
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
 }
