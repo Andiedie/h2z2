@@ -48,6 +48,7 @@ bool GameScene::init() {
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		AUDIO->playEffect("sound/start.wav");
 		hpLabel = Label::createWithSystemFont("", "Arial", 30);
 		hpLabel->setPosition(visibleSize.width / 2, 20.0f);
 		uiLayer->addChild(hpLabel);

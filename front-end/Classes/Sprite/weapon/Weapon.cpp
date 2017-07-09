@@ -79,4 +79,5 @@ void Weapon::init() {
 	AUDIO->preloadEffect("sound/reload.wav");
 	AUDIO->preloadEffect("sound/boom.wav");
 	AUDIO->preloadEffect("sound/gun.wav");
+	AUDIO->preloadEffect("sound/start.wav");
 }
