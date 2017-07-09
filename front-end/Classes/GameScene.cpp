@@ -236,6 +236,7 @@ void GameScene::update(float dt) {
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
+	if (!selfPlayer) return;
 	Weapon* w;
 	switch (code) {
 		case cocos2d::EventKeyboard::KeyCode::KEY_W:
@@ -266,6 +267,7 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 }
 
 void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
+	if (!selfPlayer) return;
 	auto body = selfPlayer->getPhysicsBody();
 	switch (code) {
 		case cocos2d::EventKeyboard::KeyCode::KEY_W:
@@ -288,12 +290,14 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 }
 
 void GameScene::onMouseMove(EventMouse* event) {
+	if (!selfPlayer) return;
 	auto pos = Vec2(event->getCursorX(), event->getCursorY());
 	// position of physicsBody as relative to the camera
 	selfPlayer->setRotation(-CC_RADIANS_TO_DEGREES((pos - selfPlayer->getPhysicsBody()->getPosition()).getAngle()) + 90.0f);
 }
 
 void GameScene::onMouseDown(EventMouse* event) {
+	if (!selfPlayer) return;
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
