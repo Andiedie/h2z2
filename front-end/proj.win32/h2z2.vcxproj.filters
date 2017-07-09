@@ -60,7 +60,7 @@
     <ClCompile Include="..\Classes\Sprite\weapon\Uzi.cpp">
       <Filter>src\Sprite\weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Sprite\weapon\shotgun.cpp">
+    <ClCompile Include="..\Classes\Sprite\weapon\Shotgun.cpp">
       <Filter>src\Sprite\weapon</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,7 +110,7 @@
     <ClInclude Include="..\Classes\Sprite\weapon\Uzi.h">
       <Filter>src\Sprite\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Sprite\weapon\shotgun.h">
+    <ClInclude Include="..\Classes\Sprite\weapon\Shotgun.h">
       <Filter>src\Sprite\weapon</Filter>
     </ClInclude>
   </ItemGroup>

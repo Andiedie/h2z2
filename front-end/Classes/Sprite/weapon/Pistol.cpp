@@ -4,7 +4,7 @@ using namespace std;
 
 string Pistol::file = "pistol";
 int Pistol::magazine = 15;
-float Pistol::fireInterval = 0.3f;
+float Pistol::fireInterval = 0.1f;
 float Pistol::reloadTime = 1.0f;
 int Pistol::damage = 30;
 
