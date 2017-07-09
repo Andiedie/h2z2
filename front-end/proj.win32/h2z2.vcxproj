@@ -150,7 +150,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Sprite\Bullet.cpp" />
     <ClCompile Include="..\Classes\Sprite\HealPack.cpp" />
     <ClCompile Include="..\Classes\Sprite\Player.cpp" />
+    <ClCompile Include="..\Classes\Sprite\weapon\Laser.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Pistol.cpp" />
+    <ClCompile Include="..\Classes\Sprite\weapon\Rocket.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Shotgun.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Uzi.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Weapon.cpp" />
@@ -167,7 +169,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Sprite\HealPack.h" />
     <ClInclude Include="..\Classes\Sprite\Player.h" />
     <ClInclude Include="..\Classes\Sprite\Sprites.h" />
+    <ClInclude Include="..\Classes\Sprite\weapon\Laser.h" />
     <ClInclude Include="..\Classes\Sprite\weapon\Pistol.h" />
+    <ClInclude Include="..\Classes\Sprite\weapon\Rocket.h" />
     <ClInclude Include="..\Classes\Sprite\weapon\Shotgun.h" />
     <ClInclude Include="..\Classes\Sprite\weapon\Uzi.h" />
     <ClInclude Include="..\Classes\Sprite\weapon\Weapon.h" />

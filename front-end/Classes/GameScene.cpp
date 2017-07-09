@@ -44,9 +44,11 @@ bool GameScene::init() {
 	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
-	addChild(Weapons::create(0, "123456", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
-	addChild(Weapons::create(1, "123457", Vec2(gameArea.x / 2, gameArea.y / 2)));
-	addChild(Weapons::create(2, "123458", Vec2(gameArea.x / 2 + 100, gameArea.y / 2)));
+	addChild(Weapons::create(0, "0", Vec2(gameArea.x / 2 - 200, gameArea.y / 2)));
+	addChild(Weapons::create(1, "1", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
+	addChild(Weapons::create(2, "2", Vec2(gameArea.x / 2, gameArea.y / 2)));
+	addChild(Weapons::create(3, "3", Vec2(gameArea.x / 2 + 100, gameArea.y / 2)));
+	addChild(Weapons::create(4, "4", Vec2(gameArea.x / 2 + 200, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {

@@ -63,6 +63,12 @@
     <ClCompile Include="..\Classes\Sprite\weapon\Shotgun.cpp">
       <Filter>src\Sprite\weapon</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\weapon\Laser.cpp">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\weapon\Rocket.cpp">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -111,6 +117,12 @@
       <Filter>src\Sprite\weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\weapon\Shotgun.h">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\weapon\Laser.h">
+      <Filter>src\Sprite\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\weapon\Rocket.h">
       <Filter>src\Sprite\weapon</Filter>
     </ClInclude>
   </ItemGroup>

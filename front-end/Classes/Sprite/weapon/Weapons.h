@@ -2,6 +2,8 @@
 #include "Pistol.h"
 #include "Uzi.h"
 #include "Shotgun.h"
+#include "Laser.h"
+#include "Rocket.h"
 
 class Weapons {
 private:

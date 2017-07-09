@@ -18,6 +18,12 @@ Weapon* Weapons::create(int type, string id, Vec2 pos) {
 		case 2:
 			w = new Shotgun(id);
 			break;
+		case 3:
+			w = new Laser(id);
+			break;
+		case 4:
+			w = new Rocket(id);
+			break;
 		default:
 			w = nullptr;
 			break;

@@ -4,9 +4,9 @@ using namespace std;
 
 string Uzi::file = "uzi";
 int Uzi::magazine = 40;
-float Uzi::fireInterval = 0.25;
+float Uzi::fireInterval = 0.05;
 float Uzi::reloadTime = 3;
-int Uzi::damage = 8;
+int Uzi::damage = 13;
 
 Uzi::Uzi(std::string id) {
 	this->initWithFile("weapon/" + Uzi::file + ".png");
@@ -26,15 +26,7 @@ void Uzi::fire() {
 	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
-	pos += 45.0f * normalizedDirection;
-	bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
-	scene->addChild(bullet);
-	bullet->broadcast();
-	pos += 45.0f * normalizedDirection;
-	bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
-	scene->addChild(bullet);
-	bullet->broadcast();
-	this->current = max(0, current - 3);
+	this->current = max(0, current - 1);
 }
 
 int Uzi::getMagazine() {
