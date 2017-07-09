@@ -15,6 +15,7 @@ Pistol::Pistol(std::string id) {
 }
 
 void Pistol::fire() {
+	CCLOG("%d %d %d", reloading, inFireInterval, current);
 	if (reloading || inFireInterval || current <= 0) return;
 	setFireInterVal();
 	auto player = getParent();

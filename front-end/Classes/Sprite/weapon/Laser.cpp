@@ -3,7 +3,7 @@ USING_NS_CC;
 using namespace std;
 
 string Laser::file = "laser";
-int Laser::magazine = 35;
+int Laser::magazine = 40;
 float Laser::fireInterval = 0.2f;
 float Laser::reloadTime = 1.0f;
 int Laser::damage = 30;
@@ -23,9 +23,10 @@ void Laser::fire() {
 	auto pos = player->getPosition();
 	int number = 8;
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
+	pos += 45.0f * normalizedDirection;
 	for (int i = 0; i < number; i++) {
-		pos += 45.0f * normalizedDirection;
 		auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
+		pos += 20.0f * normalizedDirection;
 		scene->addChild(bullet);
 		bullet->broadcast();
 	}

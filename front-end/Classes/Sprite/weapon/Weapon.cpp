@@ -32,6 +32,7 @@ void Weapon::broadCastDropped() {
 }
 
 void Weapon::setFireInterVal() {
+	if (inFireInterval) return;
 	inFireInterval = true;
 	runAction(Sequence::create(DelayTime::create(getFireInterval()), CallFunc::create([this]() {
 		this->inFireInterval = false;
@@ -39,6 +40,7 @@ void Weapon::setFireInterVal() {
 }
 
 void Weapon::reload() {
+	if (reloading) return;
 	reloading = true;
 	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([this]() {
 		this->current = this->getMagazine();
