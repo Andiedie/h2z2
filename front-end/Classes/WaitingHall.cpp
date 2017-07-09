@@ -44,7 +44,7 @@ bool WaitingHall::init()
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
 	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 50.0f);
-	playerLabel->setString("this is label");
+	playerLabel->setString("connecting...");
 
 	GSocket->on("playerList", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
 		playerLabel->setString("Current player: " + std::to_string(arr.Size()));

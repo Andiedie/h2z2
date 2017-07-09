@@ -110,6 +110,45 @@ bool GameScene::init() {
 		}
 	});
 
+	GSocket->on("gameover", [=](GameSocket* client, GenericValue<UTF8<>>&data) {
+		auto winner = data["winner"].GetString();
+		if (winner == selfId) {
+			// you win
+			auto info = Label::create("You Win!", "Microsoft YaHei UI", 72);
+			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
+			uiLayer->addChild(info);
+		}
+		this->runAction(Sequence::create(
+			DelayTime::create(3.0f),
+			CallFunc::create([=]() {
+				GSocket->removeEventHandler("initData");
+				GSocket->removeEventHandler("sync");
+				GSocket->removeEventHandler("gameover");
+				GSocket->removeEventHandler("logout");
+				GSocket->removeEventHandler("fire");
+				GSocket->removeEventHandler("hit");
+				GSocket->removeEventHandler("dead");
+				GSocket->removeEventHandler("eatPack");
+				GSocket->removeEventHandler("takeWeapon");
+				GSocket->removeEventHandler("dropWeapon");
+				Director::getInstance()->popScene();
+			}),
+			NULL
+		));
+	});
+
+	GSocket->on("logout", [=](GameSocket* client, GenericValue<UTF8<>> &data) {
+		CCLOG("logout");
+		auto who = data.GetString();
+		auto it = otherPlayers.find(who);
+		if (it != otherPlayers.end()) {
+			auto player = it->second;
+			otherPlayers.erase(it);
+
+			player->removeFromParentAndCleanup(true);
+		}
+	});
+
 	// deal with other players' shots
 	GSocket->on("fire", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto weapon = Weapons::getById(data["weaponId"].GetString());
@@ -291,7 +330,7 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 		player->broadcastHit(bullet->getDamage());
 		if (!player->damage(bullet->getDamage())) {
 			player->broadcastDead();
-			gameOver();
+			selfDead();
 		}
 		updateHpLabel();
 	}
@@ -313,8 +352,12 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 	}
 }
 
-void GameScene::gameOver() {
-	_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
+void GameScene::selfDead() {
+	auto info = Label::create("You Died!", "Microsoft YaHei UI", 72);
+	info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
+	uiLayer->addChild(info);
+
+	// _eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
 	_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
 	alive = false;
 	// invisible & untouchable

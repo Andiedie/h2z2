@@ -45,7 +45,7 @@ public:
 	void addListener();
 	void update(float);
 	bool onContactBegin(PhysicsContact &contact);
-	void gameOver();
+	void selfDead();
 	void updateHpLabel();
 	void updateWeaponLabel();
 

@@ -13,10 +13,21 @@ exports.login = (server, player) => {
 
 exports.logout = (server, player) => {
   server.playerPool.delete(player);
-  log.info(`player ${player.id} logged out`);
-  if (!server.playerPool.size) {
-    log.info('Game over because there\'s no player');
-    server.game.started = false;
+  log.info(`player ${player.id} logged out. ${server.playerPool.size} players remained`);
+  if (server.game.started) {
+    server.broadcast('logout', player.id);
+
+    server.alivePlayer.delete(player);
+    if (!server.playerPool.size) {
+      log.info('Game over because there\'s no player');
+      server.game.started = false;
+    }
+    if (server.alivePlayer.size === 1) {
+      server.broadcast('gameover', {
+        winner: [...server.alivePlayer.values()][0].id
+      });
+      server.game.started = false;
+    }
   }
   server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id));
 };
@@ -26,6 +37,7 @@ exports.requireGameStart = (server, player) => {
   server.game.started = true;
   log.info('Game start');
   server.broadcast('gameStart');
+  server.alivePlayer = new Set(server.playerPool);
   let players = Array.from(server.playerPool).map(player => player.id);
   let healPacks = [...genHealPack(game.healPack.ratio * server.playerPool.size, game.healPack.hp)];
   let weapons = [...genWeapon(game.weapon.ratio * server.playerPool.size)];
@@ -57,5 +69,23 @@ exports.sync = (() => {
 exports.broadcast = (server, player, data) => {
   data.from = player.id; // add broadcaster info, may be used later
   assert(data.type, 'attribute [type] required');
-  server.broadcast(data.type, data, player);
+  if (broadcastHook[data.type]) {
+    broadcastHook[data.type](server, player, data);
+  } else {
+    server.broadcast(data.type, data, player);
+  }
+};
+
+const broadcastHook = {
+  dead (server, player, data) {
+    server.broadcast(data.type, data, player);
+    server.alivePlayer.delete(player);
+    if (server.alivePlayer.size === 1) {
+      // only 1 player left, game over
+      server.broadcast('gameover', {
+        winner: [...server.alivePlayer.values()][0].id
+      });
+      server.game.started = false;
+    }
+  }
 };

@@ -6,6 +6,7 @@ const log = require('../utils/log');
 module.exports = class Server {
   constructor () {
     this.playerPool = new Set();
+    this.alivePlayer = null;
     this.game = {
       started: false
     };
