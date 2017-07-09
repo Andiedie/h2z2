@@ -6,7 +6,7 @@ string Laser::file = "laser";
 int Laser::magazine = 40;
 float Laser::fireInterval = 0.7f;
 float Laser::reloadTime = 1.3f;
-int Laser::damage = 25;
+int Laser::damage = 15;
 
 Laser::Laser(std::string id) {
 	this->initWithFile("weapon/" + Laser::file + ".png");

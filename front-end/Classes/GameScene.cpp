@@ -62,6 +62,8 @@ bool GameScene::init() {
 				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
+				//auto boom = Boom::create(selfPlayer->getContentSize() / 2);
+				//selfPlayer->addChild(boom);
 				//测试用的枪 懒得满图找
 				//addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
 				//addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
