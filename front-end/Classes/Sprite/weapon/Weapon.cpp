@@ -28,12 +28,12 @@ void Weapon::broadCastDropped() {
 	Document dom;
 	dom.SetObject();
 	dom.AddMember("type", "dropWeapon", dom.GetAllocator());
+	dom.AddMember("current", current, dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }
 
 void Weapon::setFireInterVal() {
 	if (inFireInterval) return;
-	broadCastFire();
 	inFireInterval = true;
 	runAction(Sequence::create(DelayTime::create(getFireInterval()), CallFunc::create([this]() {
 		this->inFireInterval = false;
@@ -74,4 +74,6 @@ void Weapon::init() {
 	AUDIO->preloadEffect("sound/rocket.wav");
 	AUDIO->preloadEffect("sound/shotgun.wav");
 	AUDIO->preloadEffect("sound/uzi.wav");
+	AUDIO->preloadEffect("sound/reload.wav");
+	AUDIO->preloadEffect("sound/explode.wav");
 }

@@ -15,6 +15,6 @@ public:
 	float getFireInterval();
 	std::string getFile();
 	Shotgun(std::string id);
-	void fire();
+	bool fire(bool force);
 };
 

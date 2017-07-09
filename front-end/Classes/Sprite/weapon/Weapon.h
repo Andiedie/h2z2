@@ -27,7 +27,7 @@ public:
 	virtual float getFireInterval() = 0;
 	void reload();
 	void reset();
-	virtual void fire() = 0;
+	virtual bool fire(bool force = false) = 0;
 	void broadCastToken();
 	void broadCastDropped();
 	void broadCastFire();

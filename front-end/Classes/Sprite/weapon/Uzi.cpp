@@ -14,8 +14,8 @@ Uzi::Uzi(std::string id) {
 	this->id = id;
 }
 
-void Uzi::fire() {
-	if (reloading || inFireInterval || current <= 0) return;
+bool Uzi::fire(bool force) {
+	if (!force && (reloading || inFireInterval || current <= 0)) return false;
 	setFireInterVal();
 	auto player = getParent();
 	auto scene = player->getParent();
@@ -26,6 +26,7 @@ void Uzi::fire() {
 	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	this->current = max(0, current - 1);
+	return true;
 }
 
 int Uzi::getMagazine() {

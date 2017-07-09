@@ -62,6 +62,8 @@ bool GameScene::init() {
 				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
+				//auto boom = Boom::create(selfPlayer->getContentSize() / 2);
+				//selfPlayer->addChild(boom);
 				//测试用的枪 懒得满图找
 				//addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
 				//addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
@@ -152,7 +154,7 @@ bool GameScene::init() {
 	// deal with other players' shots
 	GSocket->on("fire", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto weapon = Weapons::getById(data["weaponId"].GetString());
-		weapon->fire();
+		weapon->fire(true);
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -185,7 +187,9 @@ bool GameScene::init() {
 	GSocket->on("dropWeapon", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto player = getPlayerById(data["from"].GetString());
 		if (player != nullptr) {
-			this->addChild(player->dropWeapon());
+			auto w = player->dropWeapon();
+			w->current = data["current"].GetInt();
+			this->addChild(w);
 		}
 	});
 
@@ -282,7 +286,8 @@ void GameScene::onMouseDown(EventMouse* event) {
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
-				selfPlayer->weapon->fire();
+				if (selfPlayer->weapon->fire())
+					selfPlayer->weapon->broadCastFire();
 			}
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:

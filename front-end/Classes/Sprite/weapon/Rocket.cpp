@@ -14,8 +14,8 @@ Rocket::Rocket(std::string id) {
 	this->id = id;
 }
 
-void Rocket::fire() {
-	if (reloading || inFireInterval || current <= 0) return;
+bool Rocket::fire(bool force) {
+	if (!force && (reloading || inFireInterval || current <= 0)) return false;
 	setFireInterVal();
 	auto player = getParent();
 	auto scene = player->getParent();
@@ -27,6 +27,7 @@ void Rocket::fire() {
 	bullet->setScale(0.7f);
 	scene->addChild(bullet);
 	this->current = max(0, current - 1);
+	return true;
 }
 
 int Rocket::getMagazine() {
