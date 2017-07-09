@@ -8,8 +8,11 @@ module.exports = {
       y: 2593
     },
     healPack: {
-      num: 15,
+      ratio: 5,
       hp: 50
+    },
+    weapon: {
+      ratio: 5
     }
   }
 };

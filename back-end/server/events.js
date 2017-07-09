@@ -1,7 +1,7 @@
 const assert = require('assert');
 const log = require('../utils/log');
 const {game} = require('../config');
-const {genHealPack} = require('../utils/game');
+const {genHealPack, genWeapon} = require('../utils/game');
 
 // 各种和游戏有关的事件的处理器放这
 exports.login = (server, player) => {
@@ -27,11 +27,13 @@ exports.requireGameStart = (server, player) => {
   log.info('Game start');
   server.broadcast('gameStart');
   let players = Array.from(server.playerPool).map(player => player.id);
-  let healPacks = [...genHealPack(game.healPack.num, game.healPack.hp)];
+  let healPacks = [...genHealPack(game.healPack.ratio * server.playerPool.size, game.healPack.hp)];
+  let weapons = [...genWeapon(game.weapon.ratio * server.playerPool.size)];
   server.broadcastMap('initData', (server, player) => {
     return {
       players,
       healPacks,
+      weapons,
       selfId: player.id,
       selfPos: {x: Math.random() * game.area.x, y: Math.random() * game.area.y}
     };

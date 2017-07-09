@@ -44,11 +44,6 @@ bool GameScene::init() {
 	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
-	addChild(Weapons::create(0, "0", Vec2(gameArea.x / 2 - 200, gameArea.y / 2)));
-	addChild(Weapons::create(1, "1", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
-	addChild(Weapons::create(2, "2", Vec2(gameArea.x / 2, gameArea.y / 2)));
-	addChild(Weapons::create(3, "3", Vec2(gameArea.x / 2 + 100, gameArea.y / 2)));
-	addChild(Weapons::create(4, "4", Vec2(gameArea.x / 2 + 200, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -81,6 +76,11 @@ bool GameScene::init() {
 		for (SizeType i = 0; i < packs.Size(); i++) {
 			auto pack = HealPack::create(packs[i]);
 			this->addChild(pack, 0);
+		}
+
+		auto& weapons = data["weapons"];
+		for (SizeType i = 0; i < weapons.Size(); i++) {
+			addChild(Weapons::create(weapons[i]["type"].GetInt(), weapons[i]["id"].GetString(), Vec2(weapons[i]["posX"].GetDouble(), weapons[i]["posY"].GetDouble())));
 		}
 
 		started = true;
