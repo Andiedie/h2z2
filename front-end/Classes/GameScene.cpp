@@ -289,8 +289,7 @@ void GameScene::addListener() {
 }
 
 void GameScene::handleContact(Player* player, Bullet* bullet) {
-	auto boom = Boom::create(player->getContentSize() / 2);
-	player->addChild(boom, 2);
+	addChild(Boom::create(player->getPosition()), 2);
 	if (player == selfPlayer) {
 		// self-player was hit
 		player->broadcastHit(bullet->getDamage());
