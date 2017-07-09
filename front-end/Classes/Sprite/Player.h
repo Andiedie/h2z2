@@ -21,7 +21,7 @@ public:
 	int getHp() const;
 	void setHp(int _hp);
 	void heal(int _hp);
-	bool damage(float _hp); // return true if alive
+	bool damage(int _hp); // return true if alive
 	void takeWeapon(Weapon* w);
 	Weapon* dropWeapon();
 

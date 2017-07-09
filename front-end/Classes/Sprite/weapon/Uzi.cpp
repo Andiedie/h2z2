@@ -23,15 +23,15 @@ void Uzi::fire() {
 	auto pos = player->getPosition();
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * normalizedDirection;
-	auto bullet = new Bullet(file, pos, player->getRotation(), 500.0f);
+	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
 	pos += 45.0f * normalizedDirection;
-	bullet = new Bullet(file, pos, player->getRotation(), 500.0f);
+	bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
 	pos += 45.0f * normalizedDirection;
-	bullet = new Bullet(file, pos, player->getRotation(), 500.0f);
+	bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
 	this->current = max(0, current - 3);

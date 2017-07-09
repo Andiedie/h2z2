@@ -46,6 +46,7 @@ bool GameScene::init() {
 	this->addChild(background, -1);
 	addChild(Weapons::create(0, "123456", Vec2(gameArea.x / 2 - 100, gameArea.y / 2)));
 	addChild(Weapons::create(1, "123457", Vec2(gameArea.x / 2, gameArea.y / 2)));
+	addChild(Weapons::create(2, "123458", Vec2(gameArea.x / 2 + 100, gameArea.y / 2)));
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -111,7 +112,8 @@ bool GameScene::init() {
 		auto pos = Vec2(data["posX"].GetDouble(), data["posY"].GetDouble());
 		auto angle = data["angle"].GetDouble();
 		auto speed = data["speed"].GetDouble();
-		addChild(new Bullet(file, pos, angle, speed));
+		auto damage = data["damage"].GetInt();
+		addChild(new Bullet(file, pos, damage, angle, speed));
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -286,16 +288,16 @@ void GameScene::addListener() {
 void GameScene::handleContact(Player* player, Bullet* bullet) {
 	auto boom = Boom::create(player->getPosition());
 	this->addChild(boom, 2);
-	bullet->removeFromParentAndCleanup(true);
 	if (player == selfPlayer) {
 		// self-player was hit
-		player->broadcastHit(20.0f);
-		if (!player->damage(20.0f)) {
+		player->broadcastHit(bullet->getDamage());
+		if (!player->damage(bullet->getDamage())) {
 			player->broadcastDead();
 			gameOver();
 		}
 		updateHpLabel();
 	}
+	bullet->removeFromParentAndCleanup(true);
 }
 
 void GameScene::handleContact(Player* player, HealPack* pack) {

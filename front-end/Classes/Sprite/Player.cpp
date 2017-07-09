@@ -99,9 +99,9 @@ void Player::heal(int _hp) {
 	hp = std::min(hp + _hp, maxHp);
 }
 
-bool Player::damage(float _hp) {
-	hp = std::max(0.0f, hp - _hp);
-	return hp > 0.0f;
+bool Player::damage(int _hp) {
+	hp = std::max(0, hp - _hp);
+	return hp > 0;
 }
 
 void Player::broadcastDead() const {

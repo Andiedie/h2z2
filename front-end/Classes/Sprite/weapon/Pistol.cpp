@@ -3,7 +3,7 @@ USING_NS_CC;
 using namespace std;
 
 string Pistol::file = "pistol";
-int Pistol::magazine = 9;
+int Pistol::magazine = 15;
 float Pistol::fireInterval = 0.3f;
 float Pistol::reloadTime = 1.0f;
 int Pistol::damage = 30;
@@ -23,7 +23,7 @@ void Pistol::fire() {
 	auto pos = player->getPosition();
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * normalizedDirection;
-	auto bullet = new Bullet(file, pos, player->getRotation(), 700.0f);
+	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 700.0f);
 	scene->addChild(bullet);
 	bullet->broadcast();
 	this->current = max(0, current - 1);
