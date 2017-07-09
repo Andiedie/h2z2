@@ -51,7 +51,6 @@ bool GameScene::init() {
 		hpLabel->setPosition(visibleSize.width / 2, 20.0f);
 		uiLayer->addChild(hpLabel);
 		weaponLabel = Label::createWithSystemFont("", "Arial", 30);
-		weaponLabel->setPosition(visibleSize.width - 70.0f, 20.0f);
 		uiLayer->addChild(weaponLabel);
 		this->selfId = data["selfId"].GetString();
 		auto& arr = data["players"];
@@ -338,9 +337,12 @@ void GameScene::updateWeaponLabel() {
 	if (w == nullptr) {
 		weaponLabel->setString("");
 	} else {
-		sprintf(buffer, "gun: %d/%d", w->current, w->getMagazine());
+		if (w->current == -1) sprintf(buffer, "ammo: reloading"); // reloading
+		else sprintf(buffer, "ammo: %d/%d", w->current, w->getMagazine());
 		weaponLabel->setString(buffer);
 	}
+	// weaponLabel->setPosition(visibleSize.width - 70.0f, 20.0f);
+	weaponLabel->setPosition(visibleSize.width - weaponLabel->getContentSize().width / 2 - 10.0f, 20.0f);
 }
 
 template<typename Type1, typename Type2>

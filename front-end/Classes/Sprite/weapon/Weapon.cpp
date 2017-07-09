@@ -58,4 +58,3 @@ void Weapon::broadCastFire() {
 	dom.AddMember("weaponId", StringRef(id.c_str()), dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
 }
-
