@@ -31,9 +31,9 @@ exports.genWall = function * (num) {
       scaleX: Math.random() * 1.5 + 0.5,
       scaleY: Math.random() * 1.5 + 0.5,
       angle: Math.random() * 360
-    }
+    };
   }
-}
+};
 
 function randomType () {
   const random = Math.random();
