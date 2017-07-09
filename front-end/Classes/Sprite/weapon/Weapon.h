@@ -31,4 +31,5 @@ public:
 	void broadCastToken();
 	void broadCastDropped();
 	void broadCastFire();
+	static void init();
 };

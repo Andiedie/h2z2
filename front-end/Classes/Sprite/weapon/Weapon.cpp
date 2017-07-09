@@ -33,19 +33,21 @@ void Weapon::broadCastDropped() {
 
 void Weapon::setFireInterVal() {
 	if (inFireInterval) return;
+	broadCastFire();
 	inFireInterval = true;
 	runAction(Sequence::create(DelayTime::create(getFireInterval()), CallFunc::create([this]() {
 		this->inFireInterval = false;
 	}), nullptr));
-	AUDIO->playEffect(("sound/" + getFile() + ".mp3").data());
+	AUDIO->playEffect(("sound/" + getFile() + ".wav").data());
 }
 
 void Weapon::reload() {
 	if (reloading || current == getMagazine()) return;
-	reloading = AUDIO->playEffect("sound/reload.mp3", true);
+	reloading = AUDIO->playEffect("sound/reload.wav", true);
 	runAction(Sequence::create(DelayTime::create(getReloadTime()), CallFunc::create([this]() {
 		AUDIO->stopEffect(this->reloading);
 		this->current = this->getMagazine();
+		this->inFireInterval = false;
 		this->reloading = 0;
 	}), nullptr));
 }
@@ -64,4 +66,12 @@ void Weapon::broadCastFire() {
 	dom.AddMember("type", "fire", dom.GetAllocator());
 	dom.AddMember("weaponId", StringRef(id.c_str()), dom.GetAllocator());
 	GSocket->sendEvent("broadcast", dom);
+}
+
+void Weapon::init() {
+	AUDIO->preloadEffect("sound/laser.wav");
+	AUDIO->preloadEffect("sound/pistol.wav");
+	AUDIO->preloadEffect("sound/rocket.wav");
+	AUDIO->preloadEffect("sound/shotgun.wav");
+	AUDIO->preloadEffect("sound/uzi.wav");
 }

@@ -44,6 +44,7 @@ bool GameScene::init() {
 	Bullet::initAutoRemove(gameArea);
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
+	Weapon::init();
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -62,11 +63,11 @@ bool GameScene::init() {
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
 				//测试用的枪 懒得满图找
-				addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
-				addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
-				addChild(Weapons::create(2, "2", selfPlayer->getPosition() + Vec2(0, 100)));
-				addChild(Weapons::create(3, "3", selfPlayer->getPosition() + Vec2(100, 0)));
-				addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));
+				//addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
+				//addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
+				//addChild(Weapons::create(2, "2", selfPlayer->getPosition() + Vec2(0, 100)));
+				//addChild(Weapons::create(3, "3", selfPlayer->getPosition() + Vec2(100, 0)));
+				//addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
@@ -243,7 +244,6 @@ void GameScene::onMouseDown(EventMouse* event) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
 				selfPlayer->weapon->fire();
-				selfPlayer->weapon->broadCastFire();
 			}
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:
@@ -284,8 +284,8 @@ void GameScene::addListener() {
 }
 
 void GameScene::handleContact(Player* player, Bullet* bullet) {
-	auto boom = Boom::create(player->getPosition());
-	this->addChild(boom, 2);
+	auto boom = Boom::create(player->getContentSize() / 2);
+	player->addChild(boom, 2);
 	if (player == selfPlayer) {
 		// self-player was hit
 		player->broadcastHit(bullet->getDamage());
