@@ -7,6 +7,7 @@
 #include "cocos2d\external\json\rapidjson.h"
 #include <functional>
 #include <map>
+#include <string>
 
 using namespace cocos2d::network;
 using namespace rapidjson;
@@ -19,12 +20,14 @@ class GameSocket : public WebSocket::Delegate {
 	static std::string stringifyDom(const Document& dom);
 
 	GameSocket();
+	GameSocket(std::string host, std::string port);
 	void onOpen(WebSocket* ws) override;
 	void onMessage(WebSocket* ws, const WebSocket::Data &data);
 	void onClose(WebSocket* ws) override;
 	void onError(WebSocket* ws, const WebSocket::ErrorCode &data);
 public:
 	static GameSocket* getInstance();
+	static void init(std::string host, std::string port);
 
 	void sendEvent(const std::string& eventName, GenericValue<UTF8<>>& dom);
 	void sendEvent(const std::string& eventName);

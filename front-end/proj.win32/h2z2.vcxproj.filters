@@ -69,6 +69,9 @@
     <ClCompile Include="..\Classes\Sprite\weapon\Rocket.cpp">
       <Filter>src\Sprite\weapon</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\StartScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\weapon\Rocket.h">
       <Filter>src\Sprite\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\StartScene.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
