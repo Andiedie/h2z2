@@ -17,6 +17,7 @@ const string& Weapon::getId() {
 }
 
 void Weapon::broadCastToken() {
+	AUDIO->playEffect("sound/gun.wav");
 	Document dom;
 	dom.SetObject();
 	dom.AddMember("type", "takeWeapon", dom.GetAllocator());
@@ -25,6 +26,7 @@ void Weapon::broadCastToken() {
 }
 
 void Weapon::broadCastDropped() {
+	AUDIO->playEffect("sound/gun.wav");
 	Document dom;
 	dom.SetObject();
 	dom.AddMember("type", "dropWeapon", dom.GetAllocator());
@@ -76,4 +78,5 @@ void Weapon::init() {
 	AUDIO->preloadEffect("sound/uzi.wav");
 	AUDIO->preloadEffect("sound/reload.wav");
 	AUDIO->preloadEffect("sound/boom.wav");
+	AUDIO->preloadEffect("sound/gun.wav");
 }
