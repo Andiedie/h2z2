@@ -16,10 +16,6 @@ const string& Weapon::getId() {
 	return this->id;
 }
 
-int Weapon::getCurrent() {
-	return current;
-}
-
 void Weapon::broadCastToken() {
 	Document dom;
 	dom.SetObject();

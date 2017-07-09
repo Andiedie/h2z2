@@ -10,13 +10,12 @@ protected:
 	static float fireInterval;
 	static float reloadTime;
 	static int damage;
-	int current;
 	bool reloading = false, inFireInterval = false;
 	std::string id;
 	Weapon();
 	void setFireInterVal();
 public:
-	int getCurrent();
+	int current;
 	const std::string& getId();
 	virtual int getMagazine() = 0;
 	virtual int getDamage() = 0;

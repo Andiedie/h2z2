@@ -103,6 +103,10 @@ bool GameScene::init() {
 
 	// deal with other players' shots
 	GSocket->on("bullet", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto player = getPlayerById(data["from"].GetString());
+		if (player != nullptr && player->weapon != nullptr) {
+			player->weapon->current = std::max(0, player->weapon->current - 1);
+		}
 		auto file = data["file"].GetString();
 		auto pos = Vec2(data["posX"].GetDouble(), data["posY"].GetDouble());
 		auto angle = data["angle"].GetDouble();
@@ -333,7 +337,7 @@ void GameScene::updateWeaponLabel() {
 	if (w == nullptr) {
 		weaponLabel->setString("");
 	} else {
-		sprintf(buffer, "gun: %d/%d", w->getCurrent(), w->getMagazine());
+		sprintf(buffer, "gun: %d/%d", w->current, w->getMagazine());
 		weaponLabel->setString(buffer);
 	}
 }
