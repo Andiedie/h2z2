@@ -230,22 +230,25 @@ void GameScene::update(float dt) {
 	pos.y = min(pos.y, gameArea.y - size.height / 2);
 	pos.y = max(pos.y, size.height / 2);
 	selfPlayer->setPosition(pos);
+
+	selfPlayer->setVelocityX(selfPlayer->x * 200.f);
+	selfPlayer->setVelocityY(selfPlayer->y * 200.f);
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	Weapon* w;
 	switch (code) {
 		case cocos2d::EventKeyboard::KeyCode::KEY_W:
-			selfPlayer->setVelocityY(200.0f);
+			selfPlayer->y = 1;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_S:
-			selfPlayer->setVelocityY(-200.0f);
+			selfPlayer->y = -1;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_A:
-			selfPlayer->setVelocityX(-200.0f);
+			selfPlayer->x = -1;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_D:
-			selfPlayer->setVelocityX(200.0f);
+			selfPlayer->x = 1;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_G:
 			w = selfPlayer->dropWeapon();
@@ -266,20 +269,20 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	auto body = selfPlayer->getPhysicsBody();
 	switch (code) {
 		case cocos2d::EventKeyboard::KeyCode::KEY_W:
-			if (body->getVelocity().y < 0.0f) break;
-			selfPlayer->setVelocityY(0.0f);
+			if (selfPlayer->y == -1) break;
+			selfPlayer->y = 0;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_S:
-			if (body->getVelocity().y > 0.0f) break;
-			selfPlayer->setVelocityY(0.0f);
+			if (selfPlayer->y == 1) break;
+			selfPlayer->y = 0;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_A:
-			if (body->getVelocity().x > 0.0f) break;
-			selfPlayer->setVelocityX(0.0f);
+			if (selfPlayer->x == 1) break;
+			selfPlayer->x = 0;
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_D:
-			if (body->getVelocity().x < 0.0f) break;
-			selfPlayer->setVelocityX(0.0f);
+			if (selfPlayer->x == -1) break;
+			selfPlayer->x = 0;
 			break;
 	}
 }
