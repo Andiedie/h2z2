@@ -113,6 +113,7 @@ void Player::broadcastDead() const {
 
 void Player::takeWeapon(Weapon* w) {
 	if (weapon != nullptr) return;
+	w->reset();
 	w->setScale(1.0f);
 	w->setRotation(0);
 	w->removeComponent(w->getPhysicsBody());
@@ -126,6 +127,7 @@ void Player::takeWeapon(Weapon* w) {
 Weapon* Player::dropWeapon() {
 	if (weapon == nullptr) return nullptr;
 	auto w = weapon;
+	w->reset();
 	w->setScale(0.2f);
 	auto body = PhysicsBody::createBox(w->getContentSize() * w->getScale(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 	body->setCategoryBitmask(0x00000003);

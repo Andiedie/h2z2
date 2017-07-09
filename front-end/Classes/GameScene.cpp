@@ -61,6 +61,12 @@ bool GameScene::init() {
 				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
+				//测试用的枪 懒得满图找
+				addChild(Weapons::create(0, "0", selfPlayer->getPosition() + Vec2(-200, 0)));
+				addChild(Weapons::create(1, "1", selfPlayer->getPosition() + Vec2(-100, 0)));
+				addChild(Weapons::create(2, "2", selfPlayer->getPosition() + Vec2(0, 100)));
+				addChild(Weapons::create(3, "3", selfPlayer->getPosition() + Vec2(100, 0)));
+				addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));
 
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
@@ -104,17 +110,9 @@ bool GameScene::init() {
 	});
 
 	// deal with other players' shots
-	GSocket->on("bullet", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto player = getPlayerById(data["from"].GetString());
-		if (player != nullptr && player->weapon != nullptr) {
-			player->weapon->current = std::max(0, player->weapon->current - 1);
-		}
-		auto file = data["file"].GetString();
-		auto pos = Vec2(data["posX"].GetDouble(), data["posY"].GetDouble());
-		auto angle = data["angle"].GetDouble();
-		auto speed = data["speed"].GetDouble();
-		auto damage = data["damage"].GetInt();
-		addChild(new Bullet(file, pos, damage, angle, speed));
+	GSocket->on("fire", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
+		auto weapon = Weapons::getById(data["weaponId"].GetString());
+		weapon->fire();
 	});
 
 	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -203,7 +201,6 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 				this->addChild(w);
 				w->broadCastDropped();
 			}
-			// updateWeaponLabel();
 			break;
 		case cocos2d::EventKeyboard::KeyCode::KEY_R:
 			if (selfPlayer->weapon != nullptr) {
@@ -246,8 +243,8 @@ void GameScene::onMouseDown(EventMouse* event) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
 			if (selfPlayer->weapon != nullptr) {
 				selfPlayer->weapon->fire();
+				selfPlayer->weapon->broadCastFire();
 			}
-			// updateWeaponLabel();
 			break;
 		case EventMouse::MouseButton::BUTTON_RIGHT:
 		default:

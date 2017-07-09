@@ -25,7 +25,6 @@ void Uzi::fire() {
 	pos += 45.0f * normalizedDirection;
 	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 500.0f);
 	scene->addChild(bullet);
-	bullet->broadcast();
 	this->current = max(0, current - 1);
 }
 
@@ -43,4 +42,8 @@ float Uzi::getReloadTime() {
 
 float Uzi::getFireInterval() {
 	return fireInterval;
+}
+
+string Uzi::getFile() {
+	return file;
 }
