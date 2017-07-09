@@ -89,7 +89,13 @@ bool GameScene::init() {
 
 		auto& weapons = data["weapons"];
 		for (SizeType i = 0; i < weapons.Size(); i++) {
-			addChild(Weapons::create(weapons[i]["type"].GetInt(), weapons[i]["id"].GetString(), Vec2(weapons[i]["posX"].GetDouble(), weapons[i]["posY"].GetDouble())));
+			this->addChild(Weapons::create(weapons[i]["type"].GetInt(), weapons[i]["id"].GetString(), Vec2(weapons[i]["posX"].GetDouble(), weapons[i]["posY"].GetDouble())));
+		}
+
+		auto& walls = data["walls"];
+		for (SizeType i = 0; i < walls.Size(); i++) {
+			auto wall = Wall::create(walls[i]);
+			this->addChild(wall, 1);
 		}
 
 		started = true;
@@ -308,8 +314,10 @@ bool GameScene::onContactBegin(PhysicsContact &contact) {
 	if (_handleContact<Player, HealPack>(node1, node2)) return false;
 	// handle player-weapon collision
 	if (_handleContact<Player, Weapon>(node1, node2)) return false;
+	// handle wall-bullet collision
+	if (_handleContact<Wall, Bullet>(node1, node2)) return false;
 
-	return false;
+	return true;
 }
 
 void GameScene::addListener() {
@@ -357,6 +365,13 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 		weapon->broadCastToken();
 		// updateWeaponLabel();
 	}
+}
+
+void GameScene::handleContact(Wall *wall, Bullet *bullet) {
+	auto boom = Boom::create(bullet->getPosition());
+	boom->setScale(0.2f);
+	this->addChild(boom, 2);
+	bullet->removeFromParentAndCleanup(true);
 }
 
 void GameScene::selfDead() {

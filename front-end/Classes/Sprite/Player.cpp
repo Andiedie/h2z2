@@ -20,6 +20,7 @@ Player* Player::create(Vec2 pos) {
 		playerBody->setCategoryBitmask(0x00000001);
 		playerBody->setCollisionBitmask(0xFFFFFFFE); // disable collision between players
 		playerBody->setContactTestBitmask(0xFFFFFFFE);
+		playerBody->setRotationEnable(false);
 		player->setPhysicsBody(playerBody);
 
 		player->autorelease();

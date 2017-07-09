@@ -13,6 +13,9 @@ module.exports = {
     },
     weapon: {
       ratio: 5
+    },
+    wall: {
+      num: 15
     }
   }
 };

@@ -9,6 +9,12 @@ Boom::Boom() {}
 Boom* Boom::create(Vec2 pos) {
 	auto boom = new (std::nothrow) Boom();
 	if (boom && boom->initWithFile("explode.plist")) {
+		auto body = PhysicsBody::createBox(boom->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
+		body->setCategoryBitmask(0);
+		body->setCollisionBitmask(0);
+		body->setContactTestBitmask(0);
+		// boom->setPhysicsBody(body);
+
 		boom->setPosition(pos);
 		boom->setScale(.6f);
 		boom->autorelease();

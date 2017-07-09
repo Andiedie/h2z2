@@ -23,6 +23,18 @@ exports.genWeapon = function * (num) {
   }
 };
 
+exports.genWall = function * (num) {
+  while (num--) {
+    yield {
+      posX: game.area.x * Math.random(),
+      posY: game.area.y * Math.random(),
+      scaleX: Math.random() * 1.5 + 0.5,
+      scaleY: Math.random() * 1.5 + 0.5,
+      angle: Math.random() * 360
+    }
+  }
+}
+
 function randomType () {
   const random = Math.random();
   if (random < 0.4) return 0;

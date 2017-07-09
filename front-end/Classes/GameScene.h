@@ -54,6 +54,7 @@ public:
 	void handleContact(Player* player, Bullet* bullet);
 	void handleContact(Player* player, HealPack* pack);
 	void handleContact(Player* player, Weapon* weapon);
+	void handleContact(Wall* wall, Bullet* bullet);
 };
 
 void resetPhysics(Node*, PhysicsBody*);

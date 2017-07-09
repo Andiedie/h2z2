@@ -5,3 +5,4 @@
 #include "Boom.h"
 #include "HealPack.h"
 #include "weapon\Weapons.h"
+#include "Wall.h"
