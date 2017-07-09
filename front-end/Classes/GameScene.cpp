@@ -123,6 +123,7 @@ bool GameScene::init() {
 		this->runAction(Sequence::create(
 			DelayTime::create(3.0f),
 			CallFunc::create([=]() {
+			    AUDIO->stopAllEffects();
 				GSocket->removeEventHandler("initData");
 				GSocket->removeEventHandler("sync");
 				GSocket->removeEventHandler("gameover");
