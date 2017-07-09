@@ -12,7 +12,7 @@ Boom* Boom::create(Vec2 pos) {
 		boom->setPosition(pos);
 		boom->setScale(3.0f);
 		boom->autorelease();
-		AUDIO->playEffect("sound/explode.wav");
+		AUDIO->playEffect("sound/boom.wav");
 		return boom;
 	}
 	CC_SAFE_DELETE(boom);
