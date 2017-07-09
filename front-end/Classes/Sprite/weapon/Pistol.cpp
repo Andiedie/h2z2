@@ -6,7 +6,7 @@ string Pistol::file = "pistol";
 int Pistol::magazine = 15;
 float Pistol::fireInterval = 0.35f;
 float Pistol::reloadTime = 1.0f;
-int Pistol::damage = 32;
+int Pistol::damage = 58;
 
 Pistol::Pistol(std::string id) {
 	this->initWithFile("weapon/" + Pistol::file + ".png");
@@ -23,7 +23,7 @@ bool Pistol::fire(bool force) {
 	auto pos = player->getPosition();
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * normalizedDirection;
-	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 350.0f);
+	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 300.0f);
 	scene->addChild(bullet);
 	this->current = max(0, current - 1);
 	return true;

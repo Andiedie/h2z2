@@ -6,7 +6,7 @@ string Shotgun::file = "shotgun";
 int Shotgun::magazine = 25;
 float Shotgun::fireInterval = 1.0f;
 float Shotgun::reloadTime = 2.0f;
-int Shotgun::damage = 38;
+int Shotgun::damage = 27;
 
 Shotgun::Shotgun(std::string id) {
 	this->initWithFile("weapon/" + Shotgun::file + ".png");
