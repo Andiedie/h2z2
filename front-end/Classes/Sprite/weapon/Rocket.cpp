@@ -3,10 +3,11 @@ USING_NS_CC;
 using namespace std;
 
 string Rocket::file = "rocket";
-int Rocket::magazine = 8;
+int Rocket::magazine = 5;
 float Rocket::fireInterval = 1.5f;
-float Rocket::reloadTime = 2.0f;
-int Rocket::damage = 150;
+float Rocket::reloadTime = 2.5f;
+int Rocket::damage = 120;
+float Rocket::speed = 900.0f;
 
 Rocket::Rocket(std::string id) {
 	this->initWithFile("weapon/" + Rocket::file + ".png");
@@ -23,7 +24,7 @@ bool Rocket::fire(bool force) {
 	auto pos = player->getPosition();
 	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * normalizedDirection;
-	auto bullet = new Bullet(file, pos, damage, player->getRotation(), 1300.0f);
+	auto bullet = new Bullet(file, pos, damage, player->getRotation(), speed);
 	bullet->setScale(0.7f);
 	scene->addChild(bullet);
 	this->current = max(0, current - 1);

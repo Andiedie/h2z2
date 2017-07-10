@@ -5,8 +5,9 @@ using namespace std;
 string Shotgun::file = "shotgun";
 int Shotgun::magazine = 25;
 float Shotgun::fireInterval = 1.0f;
-float Shotgun::reloadTime = 2.0f;
-int Shotgun::damage = 27;
+float Shotgun::reloadTime = 2.5f;
+int Shotgun::damage = 32;
+float Shotgun::speed = 600.0f;
 
 Shotgun::Shotgun(std::string id) {
 	this->initWithFile("weapon/" + Shotgun::file + ".png");
@@ -27,15 +28,15 @@ bool Shotgun::fire(bool force) {
 	auto b3 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	auto b4 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle + kuosan)), cosf(CC_DEGREES_TO_RADIANS(angle + kuosan)));
 	auto b5 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)), cosf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)));
-	auto bullet = new Bullet(file, pos + 45.0f * b1, damage, player->getRotation(), 600.0f);
+	auto bullet = new Bullet(file, pos + 45.0f * b1, damage, player->getRotation(), speed);
 	scene->addChild(bullet);
-	bullet = new Bullet(file, pos + 45.0f * b2, damage, player->getRotation(), 600.0f);
+	bullet = new Bullet(file, pos + 45.0f * b2, damage, player->getRotation(), speed);
 	scene->addChild(bullet);
-	bullet = new Bullet(file, pos + 45.0f * b3, damage, player->getRotation(), 600.0f);
+	bullet = new Bullet(file, pos + 45.0f * b3, damage, player->getRotation(), speed);
 	scene->addChild(bullet);
-	bullet = new Bullet(file, pos + 45.0f * b4, damage, player->getRotation(), 600.0f);
+	bullet = new Bullet(file, pos + 45.0f * b4, damage, player->getRotation(), speed);
 	scene->addChild(bullet);
-	bullet = new Bullet(file, pos + 45.0f * b5, damage, player->getRotation(), 600.0f);
+	bullet = new Bullet(file, pos + 45.0f * b5, damage, player->getRotation(), speed);
 	scene->addChild(bullet);
 	this->current = max(0, current - 5);
 	return true;

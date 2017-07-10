@@ -8,6 +8,7 @@ private:
 	static float fireInterval;
 	static float reloadTime;
 	static int damage;
+	static float speed;
 public:
 	int getMagazine();
 	int getDamage();

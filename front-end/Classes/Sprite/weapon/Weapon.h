@@ -12,6 +12,7 @@ protected:
 	static float fireInterval;
 	static float reloadTime;
 	static int damage;
+	static float speed;
 	bool inFireInterval = false;
 	unsigned int reloading = 0;
 	std::string id;

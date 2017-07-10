@@ -11,6 +11,7 @@ int Weapon::magazine;
 float Weapon::fireInterval;
 float Weapon::reloadTime;
 int Weapon::damage;
+float Weapon::speed;
 
 const string& Weapon::getId() {
 	return this->id;
