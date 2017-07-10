@@ -76,6 +76,7 @@ bool GameScene::init() {
 				this->runAction(Follow::create(selfPlayer));
 			} else {
 				auto player = Player::create();
+				player->setColor(Color3B(random(63.75, 191.5), random(63.75, 191.5), random(63.75, 191.5)));
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
 			}
