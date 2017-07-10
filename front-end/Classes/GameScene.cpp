@@ -148,7 +148,7 @@ bool GameScene::init() {
 	});
 
 	GSocket->on("logout", [=](GameSocket* client, GenericValue<UTF8<>> &data) {
-		CCLOG("logout");
+		//CCLOG("logout");
 		auto who = data.GetString();
 		auto it = otherPlayers.find(who);
 		if (it != otherPlayers.end()) {

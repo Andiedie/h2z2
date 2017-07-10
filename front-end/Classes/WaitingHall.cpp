@@ -39,7 +39,7 @@ bool WaitingHall::init()
     this->origin = Director::getInstance()->getVisibleOrigin();
 
 	GSocket->on("error", [](GameSocket* client, GenericValue<UTF8<>>& data) {
-		CCLOG("manual-error: %s", data.GetString());
+		//CCLOG("manual-error: %s", data.GetString());
 	});
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
@@ -50,7 +50,7 @@ bool WaitingHall::init()
 		playerLabel->setString("Current player: " + std::to_string(arr.Size()));
 	});
 	GSocket->on("gameStart", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		CCLOG("game start!");
+		//CCLOG("game start!");
 		// switch to game scene
 		Director::getInstance()->pushScene(GameScene::createScene());
 	});

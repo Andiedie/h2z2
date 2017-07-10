@@ -27,12 +27,12 @@ GameSocket::GameSocket(std::string host, std::string port) {
 };
 
 void GameSocket::onOpen(WebSocket* ws) {
-	CCLOG("GameSocket: open");
+	//CCLOG("GameSocket: open");
 	if (connectionCallback) connectionCallback(this);
 }
 
 void GameSocket::onError(WebSocket* ws, const WebSocket::ErrorCode &code) {
-	CCLOG("GameSocket: error, code %d", code);
+	//CCLOG("GameSocket: error, code %d", code);
 }
 
 void GameSocket::onMessage(WebSocket* ws, const WebSocket::Data &data) {
@@ -48,7 +48,7 @@ void GameSocket::onMessage(WebSocket* ws, const WebSocket::Data &data) {
 }
 
 void GameSocket::onClose(WebSocket* ws) {
-	CCLOG("GameSocket: close");
+	//CCLOG("GameSocket: close");
 }
 
 void GameSocket::sendEvent(const std::string& eventName, GenericValue<UTF8<>>& dom) {

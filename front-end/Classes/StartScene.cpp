@@ -64,7 +64,7 @@ bool StartScene::init() {
 void StartScene::connect(Ref* sender) {
 	auto host = hostInput->getString();
 	auto port = portInput->getString();
-	CCLOG("%s:%s", host.c_str(), port.c_str());
+	//CCLOG("%s:%s", host.c_str(), port.c_str());
 	// TODO: host&port validation
 	GameSocket::init(host, port);
 	GSocket->onConnection([=](GameSocket* socket) {
