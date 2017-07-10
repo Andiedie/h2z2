@@ -28,11 +28,11 @@ bool Shotgun::fire(bool force) {
 	auto b3 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	auto b4 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle + kuosan)), cosf(CC_DEGREES_TO_RADIANS(angle + kuosan)));
 	auto b5 = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)), cosf(CC_DEGREES_TO_RADIANS(angle + kuosan*2)));
-	scene->addChild(new Bullet(file, pos + 45.0f * b1, damage, player->getRotation(), speed));
-	scene->addChild(new Bullet(file, pos + 45.0f * b2, damage, player->getRotation(), speed));
-	scene->addChild(new Bullet(file, pos + 45.0f * b3, damage, player->getRotation(), speed));
-	scene->addChild(new Bullet(file, pos + 45.0f * b4, damage, player->getRotation(), speed));
-	scene->addChild(new Bullet(file, pos + 45.0f * b5, damage, player->getRotation(), speed));
+	scene->addChild(new Bullet(file, pos + 60.0f * b1, damage, player->getRotation(), speed));
+	scene->addChild(new Bullet(file, pos + 60.0f * b2, damage, player->getRotation(), speed));
+	scene->addChild(new Bullet(file, pos + 60.0f * b3, damage, player->getRotation(), speed));
+	scene->addChild(new Bullet(file, pos + 60.0f * b4, damage, player->getRotation(), speed));
+	scene->addChild(new Bullet(file, pos + 60.0f * b5, damage, player->getRotation(), speed));
 	this->current = max(0, current - 1);
 	return true;
 }

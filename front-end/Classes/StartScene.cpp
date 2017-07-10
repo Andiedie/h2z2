@@ -59,7 +59,7 @@ bool StartScene::init() {
 	nameInput = ui::TextField::create("Input name here!", "Microsoft YaHei UI", 34);
 	nameInput->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 130.0f));
 	nameInput->setEnabled(true);
-	nameInput->setColor(Color3B(0, 51, 51));
+	nameInput->setColor(Color3B(204, 204, 51));
 	this->addChild(nameInput);
 
 	auto menu = Menu::create();
