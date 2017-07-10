@@ -6,7 +6,7 @@ string Uzi::file = "uzi";
 int Uzi::magazine = 30;
 float Uzi::fireInterval = 0.01f;
 float Uzi::reloadTime = 3;
-int Uzi::damage = 13;
+int Uzi::damage = 8;
 float Uzi::speed = 400.0f;
 
 Uzi::Uzi(std::string id) {
@@ -22,10 +22,10 @@ bool Uzi::fire(bool force) {
 	auto scene = player->getParent();
 	auto angle = player->getRotation();
 	auto pos = player->getPosition();
-	angle += random(-30, 30);
+	angle += random(-15, 15);
 	pos += 45.0f * Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	scene->addChild(new Bullet(file, pos, damage, player->getRotation(), speed));
-	angle += random(-30, 30);
+	angle += random(-15, 15);
 	pos += 45.0f * Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	scene->addChild(new Bullet(file, pos, damage, player->getRotation(), speed));
 	this->current = max(0, current - 1);

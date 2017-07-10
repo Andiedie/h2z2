@@ -15,6 +15,7 @@ Player* Player::create(Vec2 pos) {
 	if (player && player->initWithFile("player.png")) {
 		// init
 		player->setScale(0.3f);
+		player->setColor(Color3B(random(63.75, 191.5), random(63.75, 191.5), random(63.75, 191.5)));
 		player->setPosition(pos);
 		auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		playerBody->setCategoryBitmask(0x00000001);
