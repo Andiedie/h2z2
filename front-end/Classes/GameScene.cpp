@@ -222,7 +222,7 @@ void GameScene::update(float dt) {
 	frameCounter++;
 
 	if (!selfPlayer) return;
-	if (frameCounter == SYNC_LIMIT) {
+	if (frameCounter >= SYNC_LIMIT) {
 		frameCounter = 0;
 		GSocket->sendEvent("sync", this->selfPlayer->createSyncData());
 	}
