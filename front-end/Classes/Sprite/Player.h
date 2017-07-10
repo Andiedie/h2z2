@@ -26,5 +26,5 @@ public:
 	void takeWeapon(Weapon* w);
 	Weapon* dropWeapon();
 
-	static Player* create(cocos2d::Vec2 pos = cocos2d::Vec2::ZERO);
+	static Player* create(cocos2d::Color3B color, cocos2d::Vec2 pos = cocos2d::Vec2::ZERO);
 };

@@ -38,7 +38,16 @@ exports.requireGameStart = (server, player) => {
   log.info('Game start');
   server.broadcast('gameStart');
   server.alivePlayer = new Set(server.playerPool);
-  let players = Array.from(server.playerPool).map(player => player.id);
+  let players = Array.from(server.playerPool).map(player => {
+    return {
+      id: player.id,
+      color: {
+        r: random(190, 255),
+        g: random(190, 255),
+        b: random(190, 255)
+      }
+    };
+  });
   let healPacks = [...genHealPack(game.healPack.ratio * server.playerPool.size, game.healPack.hp)];
   let weapons = [...genWeapon(game.weapon.ratio * server.playerPool.size)];
   let walls = [...genWall(game.wall.num)];
@@ -90,4 +99,8 @@ const broadcastHook = {
       server.game.started = false;
     }
   }
+};
+
+const random = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };

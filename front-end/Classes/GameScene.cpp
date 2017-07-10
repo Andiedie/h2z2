@@ -57,10 +57,12 @@ bool GameScene::init() {
 		this->selfId = data["selfId"].GetString();
 		auto& arr = data["players"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
-			const std::string& id = arr[i].GetString();
+			const std::string& id = arr[i]["id"].GetString();
+			auto& colorData = arr[i]["color"];
+			const Color3B color = Color3B(colorData["r"].GetInt(), colorData["g"].GetInt(), colorData["b"].GetInt());
 			if (id == selfId) {
 				auto& selfPos = data["selfPos"];
-				selfPlayer = Player::create(Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
+				selfPlayer = Player::create(color, Vec2(selfPos["x"].GetDouble(), selfPos["y"].GetDouble()));
 				this->addChild(selfPlayer, 1);
 				updateHpLabel();
 				//auto boom = Boom::create(selfPlayer->getContentSize() / 2);
@@ -75,8 +77,7 @@ bool GameScene::init() {
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
 			} else {
-				auto player = Player::create();
-				player->setColor(Color3B(random(190, 255), random(190, 255), random(190, 255)));
+				auto player = Player::create(color);
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
 			}

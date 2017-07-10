@@ -10,12 +10,13 @@ const int Player::maxHp = 200;
 
 Player::Player() {}
 
-Player* Player::create(Vec2 pos) {
+Player* Player::create(Color3B color, Vec2 pos) {
 	auto player = new (std::nothrow) Player();
 	if (player && player->initWithFile("player.png")) {
 		// init
 		player->setScale(0.3f);
 		player->setPosition(pos);
+		player->setColor(color);
 		auto playerBody = PhysicsBody::createBox(player->getContentSize(), PhysicsMaterial(10.0f, 0.0f, 0.0f));
 		playerBody->setCategoryBitmask(0x00000001);
 		playerBody->setCollisionBitmask(0xFFFFFFFE); // disable collision between players
