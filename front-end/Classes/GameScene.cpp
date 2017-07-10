@@ -77,7 +77,10 @@ bool GameScene::init() {
 				// make the camera follow the player
 				this->runAction(Follow::create(selfPlayer));
 			} else {
+				auto name = Label::createWithSystemFont(arr[i]["name"].GetString(), "Arial", 24);
+				addChild(name, 5);
 				auto player = Player::create(color);
+				player->name = name;
 				this->addChild(player, 1);
 				this->otherPlayers.insert(std::make_pair(id, player));
 			}
@@ -235,6 +238,13 @@ void GameScene::update(float dt) {
 
 	selfPlayer->setVelocityX(selfPlayer->x * 250.f);
 	selfPlayer->setVelocityY(selfPlayer->y * 250.f);
+
+	auto it = otherPlayers.begin();
+	while (it != otherPlayers.end()) {
+		auto pos = it->second->getPosition();
+		it->second->name->setPosition(Vec2(pos.x, pos.y + 70));
+		it++;
+	}
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {

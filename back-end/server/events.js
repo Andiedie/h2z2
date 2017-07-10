@@ -32,6 +32,10 @@ exports.logout = (server, player) => {
   server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id));
 };
 
+exports.name = (server, player, data) => {
+  player.name = data.name;
+};
+
 exports.requireGameStart = (server, player) => {
   assert(!server.game.started, 'the game has already started');
   server.game.started = true;
@@ -41,6 +45,7 @@ exports.requireGameStart = (server, player) => {
   let players = Array.from(server.playerPool).map(player => {
     return {
       id: player.id,
+      name: player.name || '',
       color: {
         r: random(190, 255),
         g: random(190, 255),

@@ -14,6 +14,7 @@ public:
 	Vec2 origin;
 	ui::TextField *hostInput = nullptr;
 	ui::TextField *portInput = nullptr;
+	ui::TextField *nameInput = nullptr;
 
 	virtual bool init();
 

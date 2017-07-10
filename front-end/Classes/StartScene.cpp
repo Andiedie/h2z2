@@ -52,6 +52,16 @@ bool StartScene::init() {
 	portInput->setText("3000");
 	this->addChild(portInput);
 
+	auto nameLabel = Label::create("Name: ", "Microsoft YaHei UI", 28);
+	nameLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 70.0f);
+	this->addChild(nameLabel);
+
+	nameInput = ui::TextField::create("Input name here!", "Microsoft YaHei UI", 34);
+	nameInput->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 130.0f));
+	nameInput->setEnabled(true);
+	nameInput->setColor(Color3B(0, 51, 51));
+	this->addChild(nameInput);
+
 	auto menu = Menu::create();
 	menu->setPosition(visibleSize.width / 2, 150.0f);
 	auto connectButton = MenuItemFont::create("Connect", CC_CALLBACK_1(StartScene::connect, this));
@@ -62,12 +72,18 @@ bool StartScene::init() {
 }
 
 void StartScene::connect(Ref* sender) {
+	auto name = nameInput->getString();
+	if (name == "") return;
 	auto host = hostInput->getString();
 	auto port = portInput->getString();
 	//CCLOG("%s:%s", host.c_str(), port.c_str());
 	// TODO: host&port validation
 	GameSocket::init(host, port);
 	GSocket->onConnection([=](GameSocket* socket) {
+		Document dom;
+		dom.SetObject();
+		dom.AddMember("name", StringRef(name.c_str()), dom.GetAllocator());
+		GSocket->sendEvent("name", dom);
 		// connection established
 		Director::getInstance()->pushScene(WaitingHall::createScene());
 	});
