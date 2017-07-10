@@ -22,7 +22,7 @@ bool Laser::fire(bool force) {
 	auto scene = player->getParent();
 	auto angle = player->getRotation();
 	auto pos = player->getPosition();
-	int number = 8;
+	int number = 10;
 	auto direction = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	pos += 45.0f * direction;
 	for (int i = 0; i < number; i++) {
