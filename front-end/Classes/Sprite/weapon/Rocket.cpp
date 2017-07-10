@@ -22,8 +22,7 @@ bool Rocket::fire(bool force) {
 	auto scene = player->getParent();
 	auto angle = player->getRotation();
 	auto pos = player->getPosition();
-	auto normalizedDirection = Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
-	pos += 45.0f * normalizedDirection;
+	pos += 45.0f * Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	auto bullet = new Bullet(file, pos, damage, player->getRotation(), speed);
 	bullet->setScale(0.7f);
 	scene->addChild(bullet);

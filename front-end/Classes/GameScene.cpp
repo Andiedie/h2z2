@@ -345,7 +345,9 @@ void GameScene::addListener() {
 }
 
 void GameScene::handleContact(Player* player, Bullet* bullet) {
-	addChild(Boom::create(player->getPosition()), 2);
+	auto boom = Boom::create(player->getPosition());
+	boom->setScale(pow(bullet->getDamage(), 0.4)*0.2);
+	addChild(boom, 2);
 	if (player == selfPlayer) {
 		// self-player was hit
 		player->broadcastHit(bullet->getDamage());
@@ -376,8 +378,8 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 
 void GameScene::handleContact(Wall *wall, Bullet *bullet) {
 	auto boom = Boom::create(bullet->getPosition());
-	boom->setScale(0.2f);
-	this->addChild(boom, 2);
+	boom->setScale(pow(bullet->getDamage(), 0.4)*0.2);
+	addChild(boom, 2);
 	bullet->removeFromParentAndCleanup(true);
 }
 

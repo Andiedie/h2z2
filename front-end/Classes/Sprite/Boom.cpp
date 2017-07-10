@@ -16,7 +16,6 @@ Boom* Boom::create(Vec2 pos) {
 		// boom->setPhysicsBody(body);
 
 		boom->setPosition(pos);
-		boom->setScale(.6f);
 		boom->autorelease();
 		AUDIO->playEffect("sound/boom.wav");
 		return boom;
