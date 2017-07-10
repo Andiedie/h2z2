@@ -233,8 +233,8 @@ void GameScene::update(float dt) {
 	pos.y = max(pos.y, size.height / 2);
 	selfPlayer->setPosition(pos);
 
-	selfPlayer->setVelocityX(selfPlayer->x * 200.f);
-	selfPlayer->setVelocityY(selfPlayer->y * 200.f);
+	selfPlayer->setVelocityX(selfPlayer->x * 250.f);
+	selfPlayer->setVelocityY(selfPlayer->y * 250.f);
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
