@@ -113,7 +113,6 @@ bool GameScene::init() {
 			auto wall = Wall::create(walls[i]);
 			this->addChild(wall, 1);
 		}
-
 		started = true;
 	});
 
@@ -143,7 +142,7 @@ bool GameScene::init() {
 			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 			uiLayer->addChild(info);
 		}
-		/*this->runAction(Sequence::create(
+		this->runAction(Sequence::create(
 			DelayTime::create(3.0f),
 			CallFunc::create([=]() {
 			    AUDIO->stopAllEffects();
@@ -160,7 +159,7 @@ bool GameScene::init() {
 				Director::getInstance()->popScene();
 			}),
 			NULL
-		));*/
+		));
 	});
 
 	GSocket->on("logout", [=](GameSocket* client, GenericValue<UTF8<>> &data) {
@@ -254,10 +253,12 @@ void GameScene::update(float dt) {
 	pos.y = max(pos.y, size.height / 2);
 	selfPlayer->setPosition(pos);
 
+	// player move
 	selfPlayer->setVelocityX(selfPlayer->x * 250.f);
 	selfPlayer->setVelocityY(selfPlayer->y * 250.f);
+
+	// poison
 	if (Poison::inside(pos)) {
-		CCLOG("%d", Poison::getDamage());
 		if (!selfPlayer->damage(Poison::getDamage())) {
 			selfPlayer->broadcastDead();
 			selfDead();
