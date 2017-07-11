@@ -2,6 +2,7 @@ const assert = require('assert');
 const log = require('../utils/log');
 const {game} = require('../config');
 const {genHealPack, genWeapon, genWall} = require('../utils/game');
+let lastSyncTime;
 
 // 各种和游戏有关的事件的处理器放这
 exports.login = (server, player) => {
@@ -71,15 +72,19 @@ exports.requireGameStart = (server, player) => {
       selfPos: {x: Math.random() * game.area.x, y: Math.random() * game.area.y}
     };
   });
+  lastSyncTime = now();
 };
 
 exports.sync = (server, player, data) => {
   server.syncPool.set(player.id, data);
-  if (server.syncPool.size === server.alivePool.size) {
-    // all sync-data received
+  // 超过半秒以上没有更新
+  // 获取拿到了全部存活玩家的同步数据
+  if (now() - lastSyncTime > 500 ||
+    server.syncPool.size === server.alivePool.size) {
     server.broadcast('sync', Array.from(server.syncPool).map(([key, value]) => {
       return {id: key, data: value};
     }));
+    lastSyncTime = now();
     server.syncPool.clear();
   }
 };
@@ -112,3 +117,5 @@ const broadcastHook = {
 const random = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+const now = () => new Date().getTime();
