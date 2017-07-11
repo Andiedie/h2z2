@@ -75,7 +75,7 @@ exports.requireGameStart = (server, player) => {
 
 exports.sync = (server, player, data) => {
   server.syncPool.set(player.id, data);
-  if (server.syncPool.size === server.playerPool.size) {
+  if (server.syncPool.size === server.alivePool.size) {
     // all sync-data received
     server.broadcast('sync', Array.from(server.syncPool).map(([key, value]) => {
       return {id: key, data: value};

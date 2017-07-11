@@ -3,6 +3,8 @@
 #include <chrono>
 #include <algorithm>
 
+#define FOLLOW_TAG 10086
+
 USING_NS_CC;
 using namespace std::chrono;
 using namespace std;
@@ -81,7 +83,9 @@ bool GameScene::init() {
 				//addChild(Weapons::create(4, "4", selfPlayer->getPosition() + Vec2(200, 0)));
 
 				// make the camera follow the player
-				this->runAction(Follow::create(selfPlayer));
+				Action* follow = Follow::create(selfPlayer);
+				follow->setTag(FOLLOW_TAG);
+				this->runAction(follow);
 			} else {
 				auto name = Label::createWithSystemFont(arr[i]["name"].GetString(), "Arial", 24);
 				addChild(name, 5);
@@ -138,7 +142,7 @@ bool GameScene::init() {
 			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 			uiLayer->addChild(info);
 		}
-		this->runAction(Sequence::create(
+		/*this->runAction(Sequence::create(
 			DelayTime::create(3.0f),
 			CallFunc::create([=]() {
 			    AUDIO->stopAllEffects();
@@ -155,7 +159,7 @@ bool GameScene::init() {
 				Director::getInstance()->popScene();
 			}),
 			NULL
-		));
+		));*/
 	});
 
 	GSocket->on("logout", [=](GameSocket* client, GenericValue<UTF8<>> &data) {
@@ -221,13 +225,18 @@ bool GameScene::init() {
 }
 
 void GameScene::update(float dt) {
-	updateWeaponLabel();
-
-	if (!started) return;
 	static int frameCounter = 0;
+	auto it = otherPlayers.begin();
 	this->getScene()->getPhysicsWorld()->step(1.0f / FRAME_RATE);
-	frameCounter++;
+	while (it != otherPlayers.end()) {
+		auto pos = it->second->getPosition();
+		it->second->name->setPosition(Vec2(pos.x, pos.y + 70));
+		it++;
+	}
 
+	if (!started || !selfPlayer) return;
+	updateWeaponLabel();
+	frameCounter++;
 	if (!selfPlayer) return;
 	if (frameCounter >= SYNC_LIMIT) {
 		frameCounter = 0;
@@ -245,13 +254,6 @@ void GameScene::update(float dt) {
 
 	selfPlayer->setVelocityX(selfPlayer->x * 250.f);
 	selfPlayer->setVelocityY(selfPlayer->y * 250.f);
-
-	auto it = otherPlayers.begin();
-	while (it != otherPlayers.end()) {
-		auto pos = it->second->getPosition();
-		it->second->name->setPosition(Vec2(pos.x, pos.y + 70));
-		it++;
-	}
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
@@ -316,16 +318,17 @@ void GameScene::onMouseMove(EventMouse* event) {
 }
 
 void GameScene::onMouseDown(EventMouse* event) {
-	if (!selfPlayer) return;
+	if (!started) return;
 	switch (event->getMouseButton()) {
 		case EventMouse::MouseButton::BUTTON_LEFT:
-			if (selfPlayer->weapon != nullptr) {
-				if (selfPlayer->weapon->fire())
-					selfPlayer->weapon->broadCastFire();
+			if (selfPlayer) {
+				if (selfPlayer->weapon != nullptr) {
+					if (selfPlayer->weapon->fire())
+						selfPlayer->weapon->broadCastFire();
+				}
+			} else {
+				changeView();
 			}
-			break;
-		case EventMouse::MouseButton::BUTTON_RIGHT:
-		default:
 			break;
 	}
 }
@@ -371,8 +374,6 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 		// self-player was hit
 		player->broadcastHit(bullet->getDamage());
 		if (!player->damage(bullet->getDamage())) {
-			updateDeadLabel("You died!");
-			aliveLabel->setString(to_string(otherPlayers.size()) + " Alive");
 			player->broadcastDead();
 			selfDead();
 		}
@@ -382,7 +383,7 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 }
 
 void GameScene::handleContact(Player* player, HealPack* pack) {
-	if (player->getHp() == Player::maxHp) return;
+	if (player->getHp() >= Player::maxHp) return;
 	player->heal(pack->getHp());
 	updateHpLabel();
 	pack->broadcastEaten();
@@ -404,28 +405,31 @@ void GameScene::handleContact(Wall *wall, Bullet *bullet) {
 }
 
 void GameScene::selfDead() {
+	// UI
+	updateDeadLabel("You died!");
+	aliveLabel->setString(to_string(otherPlayers.size()) + " Alive");
 	auto info = Label::create("You Died!", "Microsoft YaHei UI", 72);
 	info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 	uiLayer->addChild(info);
-
-	// _eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
-	_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
-	alive = false;
-	// invisible & untouchable
-	auto body = selfPlayer->getPhysicsBody();
-	selfPlayer->setVisible(false);
-	body->setCollisionBitmask(0x00000000);
-	body->setContactTestBitmask(0x00000000);
-	body->setCategoryBitmask(0x00000000);
+	weaponLabel->setString("");
+	hpLabel->setString("");
+	// 移出键盘监听器
+	_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
+	//_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
+	// 移除玩家
+	selfPlayer->removeFromParentAndCleanup(true);
+	selfPlayer = nullptr;
+	// 查看其他玩家
+	changeView();
 }
 
 void GameScene::updateHpLabel() {
-	static char buffer[20];
-	sprintf(buffer, "hp: %d", selfPlayer->getHp());
-	hpLabel->setString(buffer);
+	if (!selfPlayer) return;
+	hpLabel->setString("HP: " + to_string(selfPlayer->getHp()));
 }
 
 void GameScene::updateWeaponLabel() {
+	if (!selfPlayer) return;
 	static char buffer[40];
 	auto w = selfPlayer->weapon;
 	if (w == nullptr) {
@@ -450,11 +454,6 @@ bool GameScene::_handleContact(cocos2d::Sprite *node1, cocos2d::Sprite *node2) {
 	return false;
 }
 
-void resetPhysics(Node* node, PhysicsBody* body) {
-	node->removeComponent(node->getPhysicsBody());
-	node->setPhysicsBody(body);
-}
-
 Player* GameScene::getPlayerById(string id) {
 	auto it = otherPlayers.find(id);
 	if (it != otherPlayers.end()) return it->second;
@@ -469,4 +468,18 @@ void GameScene::updateDeadLabel(string msg) {
 	runAction(Sequence::create(DelayTime::create(3.0f), CallFunc::create([this]() {
 		infoLabel->setVisible(false);
 	}), nullptr));
+}
+
+void GameScene::changeView() {
+	if (selfPlayer || otherPlayers.size() <= 1) return;
+	static auto it = otherPlayers.begin();
+	if (it == otherPlayers.end()) {
+		it = otherPlayers.begin();
+	}
+	this->stopActionByTag(FOLLOW_TAG);
+	auto follow = Follow::create(it->second);
+	follow->setTag(FOLLOW_TAG);
+	this->runAction(follow);
+	hpLabel->setString("Watching \"" + it->second->name->getString() + "\" (click to change)");
+	it++;
 }
