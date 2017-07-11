@@ -5,6 +5,7 @@
 
 USING_NS_CC;
 using namespace std::chrono;
+using namespace std;
 
 Scene* GameScene::createScene() {
 	// 'scene' is an autorelease object
@@ -48,16 +49,20 @@ bool GameScene::init() {
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		AUDIO->playEffect("sound/start.wav");
+		weaponLabel = Label::createWithSystemFont("", "Arial", 30);
+		weaponLabel->setPosition(visibleSize.width - 100.0f, 20.0f);
 		hpLabel = Label::createWithSystemFont("", "Arial", 30);
 		hpLabel->setPosition(visibleSize.width / 2, 20.0f);
-		uiLayer->addChild(hpLabel);
-		weaponLabel = Label::createWithSystemFont("", "Arial", 30);
+		deadLabel = Label::createWithSystemFont("", "Arial", 24);
 		uiLayer->addChild(weaponLabel);
+		uiLayer->addChild(hpLabel);
+		uiLayer->addChild(deadLabel);
+
+		AUDIO->playEffect("sound/start.wav");
 		this->selfId = data["selfId"].GetString();
 		auto& arr = data["players"];
 		for (SizeType i = 0; i < arr.Size(); i++) {
-			const std::string& id = arr[i]["id"].GetString();
+			const string& id = arr[i]["id"].GetString();
 			auto& colorData = arr[i]["color"];
 			const Color3B color = Color3B(colorData["r"].GetInt(), colorData["g"].GetInt(), colorData["b"].GetInt());
 			if (id == selfId) {
@@ -80,7 +85,7 @@ bool GameScene::init() {
 				auto player = Player::create(color);
 				player->name = name;
 				this->addChild(player, 1);
-				this->otherPlayers.insert(std::make_pair(id, player));
+				this->otherPlayers.insert(make_pair(id, player));
 			}
 		}
 
@@ -113,7 +118,7 @@ bool GameScene::init() {
 			// milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			// CCLOG("ping: %lld", ms.count() - data["timestamp"].GetInt64());
 
-			const std::string& id = arr[i]["id"].GetString();
+			const string& id = arr[i]["id"].GetString();
 			auto it = this->otherPlayers.find(id);
 			if (it == this->otherPlayers.end()) continue; // data of selfPlayer, just ignore it
 
@@ -156,8 +161,8 @@ bool GameScene::init() {
 		auto it = otherPlayers.find(who);
 		if (it != otherPlayers.end()) {
 			auto player = it->second;
+			updateDeadLabel(player->name->getString() + " leave the game");
 			otherPlayers.erase(it);
-
 			player->removeFromParentAndCleanup(true);
 		}
 	});
@@ -178,6 +183,7 @@ bool GameScene::init() {
 		auto who = data["from"].GetString();
 		auto it = otherPlayers.find(who);
 		if (it != otherPlayers.end()) {
+			updateDeadLabel(it->second->name->getString() + " is killed");
 			it->second->removeFromParentAndCleanup(true);
 			otherPlayers.erase(it);
 		}
@@ -211,8 +217,6 @@ bool GameScene::init() {
 
 void GameScene::update(float dt) {
 	updateWeaponLabel();
-	using std::max;
-	using std::min;
 
 	if (!started) return;
 	static int frameCounter = 0;
@@ -362,6 +366,7 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 		// self-player was hit
 		player->broadcastHit(bullet->getDamage());
 		if (!player->damage(bullet->getDamage())) {
+			updateDeadLabel("You died!");
 			player->broadcastDead();
 			selfDead();
 		}
@@ -382,7 +387,6 @@ void GameScene::handleContact(Player* player, Weapon* weapon) {
 	if (player == selfPlayer && selfPlayer->weapon == nullptr) {
 		player->takeWeapon(weapon);
 		weapon->broadCastToken();
-		// updateWeaponLabel();
 	}
 }
 
@@ -425,7 +429,6 @@ void GameScene::updateWeaponLabel() {
 		else sprintf(buffer, "ammo: %d/%d", w->current, w->getMagazine());
 		weaponLabel->setString(buffer);
 	}
-	weaponLabel->setPosition(visibleSize.width - weaponLabel->getContentSize().width / 2 - 10.0f, 20.0f);
 }
 
 template<typename Type1, typename Type2>
@@ -446,8 +449,18 @@ void resetPhysics(Node* node, PhysicsBody* body) {
 	node->setPhysicsBody(body);
 }
 
-Player* GameScene::getPlayerById(std::string id) {
+Player* GameScene::getPlayerById(string id) {
 	auto it = otherPlayers.find(id);
 	if (it != otherPlayers.end()) return it->second;
 	return nullptr;
+}
+
+void GameScene::updateDeadLabel(string msg) {
+	deadLabel->setVisible(true);
+	deadLabel->setString(deadLabel->getString() + "\n" + msg);
+	auto size = deadLabel->getContentSize();
+	deadLabel->setPosition(size.width/2+20.0f, size.height/2.0+20.0f);
+	runAction(Sequence::create(DelayTime::create(3.0f), CallFunc::create([this]() {
+		deadLabel->setVisible(false);
+	}), nullptr));
 }

@@ -31,7 +31,7 @@ public:
 	std::map<std::string, Player*> otherPlayers;
 	bool started = false;
 	bool alive = true;
-	cocos2d::Label *hpLabel, *weaponLabel;
+	cocos2d::Label *hpLabel, *weaponLabel, *deadLabel;
 
     virtual bool init();
     
@@ -48,6 +48,7 @@ public:
 	void selfDead();
 	void updateHpLabel();
 	void updateWeaponLabel();
+	void updateDeadLabel(std::string msg);
 
 	Player* getPlayerById(std::string id);
 
