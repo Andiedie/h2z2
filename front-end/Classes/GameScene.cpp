@@ -18,6 +18,17 @@ Scene* GameScene::createScene() {
 	auto gameLayer = GameScene::create();
 	gameLayer->mWorld = scene->getPhysicsWorld();
 	gameLayer->uiLayer = Layer::create();
+	gameLayer->weaponLabel = Label::createWithSystemFont("", "Arial", 30);
+	gameLayer->weaponLabel->setPosition(gameLayer->visibleSize.width - 100.0f, 20.0f);
+	gameLayer->hpLabel = Label::createWithSystemFont("", "Arial", 30);
+	gameLayer->hpLabel->setPosition(gameLayer->visibleSize.width / 2, 20.0f);
+	gameLayer->infoLabel = Label::createWithSystemFont("", "Arial", 24);
+	gameLayer->aliveLabel = Label::createWithSystemFont("", "Arial", 30);
+	gameLayer->aliveLabel->setPosition(gameLayer->visibleSize.width - 50.0f, gameLayer->visibleSize.height - 20.0f);
+	gameLayer->uiLayer->addChild(gameLayer->weaponLabel);
+	gameLayer->uiLayer->addChild(gameLayer->hpLabel);
+	gameLayer->uiLayer->addChild(gameLayer->infoLabel);
+	gameLayer->uiLayer->addChild(gameLayer->aliveLabel);
 
 	// add layer as a child to scene
 	scene->addChild(gameLayer);
@@ -49,18 +60,10 @@ bool GameScene::init() {
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		weaponLabel = Label::createWithSystemFont("", "Arial", 30);
-		weaponLabel->setPosition(visibleSize.width - 100.0f, 20.0f);
-		hpLabel = Label::createWithSystemFont("", "Arial", 30);
-		hpLabel->setPosition(visibleSize.width / 2, 20.0f);
-		deadLabel = Label::createWithSystemFont("", "Arial", 24);
-		uiLayer->addChild(weaponLabel);
-		uiLayer->addChild(hpLabel);
-		uiLayer->addChild(deadLabel);
-
 		AUDIO->playEffect("sound/start.wav");
 		this->selfId = data["selfId"].GetString();
 		auto& arr = data["players"];
+		aliveLabel->setString(to_string(arr.Size()) + " Alive");
 		for (SizeType i = 0; i < arr.Size(); i++) {
 			const string& id = arr[i]["id"].GetString();
 			auto& colorData = arr[i]["color"];
@@ -163,6 +166,7 @@ bool GameScene::init() {
 			auto player = it->second;
 			updateDeadLabel(player->name->getString() + " leave the game");
 			otherPlayers.erase(it);
+			aliveLabel->setString(to_string(otherPlayers.size() + 1) + " Alive");
 			player->removeFromParentAndCleanup(true);
 		}
 	});
@@ -186,6 +190,7 @@ bool GameScene::init() {
 			updateDeadLabel(it->second->name->getString() + " is killed");
 			it->second->removeFromParentAndCleanup(true);
 			otherPlayers.erase(it);
+			aliveLabel->setString(to_string(otherPlayers.size() + 1) + " Alive");
 		}
 	});
 
@@ -367,6 +372,7 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 		player->broadcastHit(bullet->getDamage());
 		if (!player->damage(bullet->getDamage())) {
 			updateDeadLabel("You died!");
+			aliveLabel->setString(to_string(otherPlayers.size()) + " Alive");
 			player->broadcastDead();
 			selfDead();
 		}
@@ -456,11 +462,11 @@ Player* GameScene::getPlayerById(string id) {
 }
 
 void GameScene::updateDeadLabel(string msg) {
-	deadLabel->setVisible(true);
-	deadLabel->setString(deadLabel->getString() + "\n" + msg);
-	auto size = deadLabel->getContentSize();
-	deadLabel->setPosition(size.width/2+20.0f, size.height/2.0+20.0f);
+	infoLabel->setVisible(true);
+	infoLabel->setString(infoLabel->getString() + "\n" + msg);
+	auto size = infoLabel->getContentSize();
+	infoLabel->setPosition(size.width/2+20.0f, size.height/2.0+20.0f);
 	runAction(Sequence::create(DelayTime::create(3.0f), CallFunc::create([this]() {
-		deadLabel->setVisible(false);
+		infoLabel->setVisible(false);
 	}), nullptr));
 }
