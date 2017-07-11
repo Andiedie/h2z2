@@ -31,7 +31,7 @@ bool WaitingHall::init()
         return false;
     }
 
-	auto title = Label::create("H2Z2", "Microsoft YaHei UI", 96);
+	auto title = Label::create("H2Z2", "Arial", 96);
 	title->setPosition(visibleSize.width / 2, visibleSize.height - 70.0f);
 	this->addChild(title);
 
@@ -43,11 +43,11 @@ bool WaitingHall::init()
 		error->setString(data.GetString());
 	});
 
-	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
+	auto playerLabel = Label::createWithSystemFont("", "Arial", 18);
 	playerLabel->setPosition(visibleSize/2);
 	this->addChild(playerLabel, 1);
 
-	error = Label::create("", "Microsoft YaHei UI", 28);
+	error = Label::create("", "Arial", 28);
 	error->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 	this->addChild(error);
 

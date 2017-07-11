@@ -150,6 +150,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Sprite\Bullet.cpp" />
     <ClCompile Include="..\Classes\Sprite\HealPack.cpp" />
     <ClCompile Include="..\Classes\Sprite\Player.cpp" />
+    <ClCompile Include="..\Classes\Sprite\Poison.cpp" />
     <ClCompile Include="..\Classes\Sprite\Wall.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Laser.cpp" />
     <ClCompile Include="..\Classes\Sprite\weapon\Pistol.cpp" />
@@ -170,6 +171,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Sprite\Bullet.h" />
     <ClInclude Include="..\Classes\Sprite\HealPack.h" />
     <ClInclude Include="..\Classes\Sprite\Player.h" />
+    <ClInclude Include="..\Classes\Sprite\Poison.h" />
     <ClInclude Include="..\Classes\Sprite\Sprites.h" />
     <ClInclude Include="..\Classes\Sprite\Wall.h" />
     <ClInclude Include="..\Classes\Sprite\weapon\Laser.h" />

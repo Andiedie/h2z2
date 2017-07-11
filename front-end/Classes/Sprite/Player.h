@@ -19,7 +19,6 @@ public:
 	void addVelocity(cocos2d::Vec2 v);
 	void setVelocityX(float vx);
 	void setVelocityY(float vy);
-	void broadcastHit(float dmg) const;
 	void broadcastDead() const;
 	int getHp() const;
 	void setHp(int _hp);

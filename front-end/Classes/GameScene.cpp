@@ -59,6 +59,7 @@ bool GameScene::init() {
 	background->setPosition(gameArea / 2);
 	this->addChild(background, -1);
 	Weapon::init();
+	addChild(Poison::init(gameArea), 6);
 
 	// received as the game starts
 	GSocket->on("initData", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
@@ -138,7 +139,7 @@ bool GameScene::init() {
 		auto winner = data["winner"].GetString();
 		if (winner == selfId) {
 			// you win
-			auto info = Label::create("You Win!", "Microsoft YaHei UI", 72);
+			auto info = Label::create("You Win!", "Arial", 72);
 			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 			uiLayer->addChild(info);
 		}
@@ -226,6 +227,7 @@ bool GameScene::init() {
 
 void GameScene::update(float dt) {
 	static int frameCounter = 0;
+
 	auto it = otherPlayers.begin();
 	this->getScene()->getPhysicsWorld()->step(1.0f / FRAME_RATE);
 	while (it != otherPlayers.end()) {
@@ -233,7 +235,7 @@ void GameScene::update(float dt) {
 		it->second->name->setPosition(Vec2(pos.x, pos.y + 70));
 		it++;
 	}
-
+	Poison::drawPoison();
 	if (!started || !selfPlayer) return;
 	updateWeaponLabel();
 	frameCounter++;
@@ -254,6 +256,14 @@ void GameScene::update(float dt) {
 
 	selfPlayer->setVelocityX(selfPlayer->x * 250.f);
 	selfPlayer->setVelocityY(selfPlayer->y * 250.f);
+	if (Poison::inside(pos)) {
+		CCLOG("%d", Poison::getDamage());
+		if (!selfPlayer->damage(Poison::getDamage())) {
+			selfPlayer->broadcastDead();
+			selfDead();
+		}
+		updateHpLabel();
+	}
 }
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
@@ -372,7 +382,6 @@ void GameScene::handleContact(Player* player, Bullet* bullet) {
 	addChild(boom, 2);
 	if (player == selfPlayer) {
 		// self-player was hit
-		player->broadcastHit(bullet->getDamage());
 		if (!player->damage(bullet->getDamage())) {
 			player->broadcastDead();
 			selfDead();
@@ -408,7 +417,7 @@ void GameScene::selfDead() {
 	// UI
 	updateDeadLabel("You died!");
 	aliveLabel->setString(to_string(otherPlayers.size()) + " Alive");
-	auto info = Label::create("You Died!", "Microsoft YaHei UI", 72);
+	auto info = Label::create("You Died!", "Arial", 72);
 	info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 	uiLayer->addChild(info);
 	weaponLabel->setString("");

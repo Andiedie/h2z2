@@ -83,14 +83,6 @@ void Player::setVelocityY(float vy) {
 	}
 }
 
-void Player::broadcastHit(float dmg) const {
-	Document dom;
-	dom.SetObject();
-	dom.AddMember("type", "hit", dom.GetAllocator());
-	dom.AddMember("damage", 20.0f, dom.GetAllocator());	// TODO: damage determined by bullet type
-	GSocket->sendEvent("broadcast", dom);
-}
-
 int Player::getHp() const { return hp; }
 
 void Player::setHp(int _hp) {

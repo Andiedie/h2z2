@@ -75,6 +75,9 @@
     <ClCompile Include="..\Classes\Sprite\Wall.cpp">
       <Filter>src\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Sprite\Poison.cpp">
+      <Filter>src\Sprite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -135,6 +138,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Sprite\Wall.h">
+      <Filter>src\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Sprite\Poison.h">
       <Filter>src\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
