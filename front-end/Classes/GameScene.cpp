@@ -142,20 +142,21 @@ bool GameScene::init() {
 			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 			uiLayer->addChild(info);
 		}
+		_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
+		_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
+		GSocket->removeEventHandler("initData");
+		GSocket->removeEventHandler("sync");
+		GSocket->removeEventHandler("logout");
+		GSocket->removeEventHandler("fire");
+		GSocket->removeEventHandler("dead");
+		GSocket->removeEventHandler("eatPack");
+		GSocket->removeEventHandler("takeWeapon");
+		GSocket->removeEventHandler("dropWeapon");
 		this->runAction(Sequence::create(
 			DelayTime::create(3.0f),
 			CallFunc::create([=]() {
 			    AUDIO->stopAllEffects();
-				GSocket->removeEventHandler("initData");
-				GSocket->removeEventHandler("sync");
 				GSocket->removeEventHandler("gameover");
-				GSocket->removeEventHandler("logout");
-				GSocket->removeEventHandler("fire");
-				GSocket->removeEventHandler("hit");
-				GSocket->removeEventHandler("dead");
-				GSocket->removeEventHandler("eatPack");
-				GSocket->removeEventHandler("takeWeapon");
-				GSocket->removeEventHandler("dropWeapon");
 				Director::getInstance()->popScene();
 			}),
 			NULL
@@ -179,12 +180,6 @@ bool GameScene::init() {
 	GSocket->on("fire", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		auto weapon = Weapons::getById(data["weaponId"].GetString());
 		weapon->fire(true);
-	});
-
-	GSocket->on("hit", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
-		auto dmg = data["damage"].GetDouble();
-		auto player = getPlayerById(data["from"].GetString());
-		if (player != nullptr) player->damage(dmg);
 	});
 
 	GSocket->on("dead", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
