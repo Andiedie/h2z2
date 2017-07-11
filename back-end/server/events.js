@@ -1,7 +1,7 @@
 const assert = require('assert');
 const log = require('../utils/log');
 const {game} = require('../config');
-const {genHealPack, genWeapon, genWall} = require('../utils/game');
+const {genHealPack, genWeapon, genWall, randomColor} = require('../utils/game');
 let lastSyncTime;
 
 // 各种和游戏有关的事件的处理器放这
@@ -52,11 +52,7 @@ exports.requireGameStart = (server, player) => {
     return {
       id: player.id,
       name: player.name || '',
-      color: {
-        r: random(190, 255),
-        g: random(190, 255),
-        b: random(190, 255)
-      }
+      color: randomColor()
     };
   });
   let healPacks = [...genHealPack(game.healPack.ratio * server.playerPool.size, game.healPack.hp)];
@@ -112,10 +108,6 @@ const broadcastHook = {
       server.start = false;
     }
   }
-};
-
-const random = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 const now = () => new Date().getTime();

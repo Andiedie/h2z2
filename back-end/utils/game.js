@@ -18,9 +18,17 @@ exports.genWeapon = function * (num) {
       id: gen(8),
       posX: game.area.x * Math.random(),
       posY: game.area.y * Math.random(),
-      type: randomType()
+      type: random(0, 4)
     };
   }
+};
+
+exports.randomColor = function () {
+  return {
+    r: random(190, 255),
+    g: random(190, 255),
+    b: random(190, 255)
+  };
 };
 
 exports.genWall = function * (num) {
@@ -35,11 +43,6 @@ exports.genWall = function * (num) {
   }
 };
 
-function randomType () {
-  const random = Math.random();
-  if (random < 0.4) return 0;
-  if (random < 0.55) return 1;
-  if (random < 0.7) return 2;
-  if (random < 0.85) return 3;
-  return 4;
-}
+const random = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
