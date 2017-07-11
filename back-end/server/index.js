@@ -5,11 +5,15 @@ const log = require('../utils/log');
 
 module.exports = class Server {
   constructor () {
-    this.playerPool = new Set();
-    this.alivePlayer = null;
-    this.game = {
-      started: false
-    };
+    // 等候玩家列表
+    this.waitPool = new Set();
+    // 游戏中玩家列表
+    this.playerPool = null;
+    // 存活玩家列表
+    this.alivePool = null;
+    // 同步数据
+    this.syncPool = null;
+    this.start = false;
   }
 
   listen (port) {
@@ -18,7 +22,8 @@ module.exports = class Server {
   }
 
   broadcast (eventName, obj, except = null) {
-    for (const player of this.playerPool) {
+    let list = eventName === 'waitList' ? this.waitPool : this.playerPool;
+    for (const player of list) {
       if (player === except) continue;
       player.sendEvent(eventName, obj);
     }
@@ -44,7 +49,11 @@ function onConnection (ws) {
         handler(this, player, ...args);
       } catch (err) {
         log.error(err.stack);
-        player.sendError(err.message);
+        try {
+          player.sendError(err.message);
+        } catch (err) {
+          log.error(`${player.id}: ${err.message}`);
+        }
       }
     });
   }

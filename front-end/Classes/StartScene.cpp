@@ -84,7 +84,6 @@ void StartScene::connect(Ref* sender) {
 		dom.SetObject();
 		dom.AddMember("name", StringRef(name.c_str()), dom.GetAllocator());
 		GSocket->sendEvent("name", dom);
-		// connection established
 		Director::getInstance()->pushScene(WaitingHall::createScene());
 	});
 }

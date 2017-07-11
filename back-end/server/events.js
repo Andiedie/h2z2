@@ -5,43 +5,48 @@ const {genHealPack, genWeapon, genWall} = require('../utils/game');
 
 // 各种和游戏有关的事件的处理器放这
 exports.login = (server, player) => {
-  assert(!server.game.started, 'you can only login before the game starts');
-  server.playerPool.add(player);
-  log.info(`player ${player.id} logged in`);
-  server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id));
+  server.waitPool.add(player);
+  log.info(`player ${player.id} enter waiting hall. ${server.waitPool.size} waiting`);
 };
 
 exports.logout = (server, player) => {
-  server.playerPool.delete(player);
-  log.info(`player ${player.id} logged out. ${server.playerPool.size} players remained`);
-  if (server.game.started) {
+  if (server.waitPool.has(player)) {
+    log.info(`player ${player.id} leave waiting hall. ${server.waitPool.size} waiting`);
+    server.waitPool.delete(player);
+    server.broadcast('waitList', Array.from(server.waitPool).map(player => player.name || 'no name'));
+  } else {
+    log.info(`player ${player.id} leave game. ${server.playerPool.size} playing`);
+    server.playerPool.delete(player);
+    server.alivePool.delete(player);
     server.broadcast('logout', player.id);
-
-    server.alivePlayer.delete(player);
     if (!server.playerPool.size) {
       log.info('Game over because there\'s no player');
-      server.game.started = false;
-    }
-    if (server.alivePlayer.size === 1) {
-      server.broadcast('gameover', {
-        winner: [...server.alivePlayer.values()][0].id
-      });
-      server.game.started = false;
+      server.start = false;
+    } else if (server.alivePool.size === 1) {
+      const winner = [...server.alivePool.values()][0].id;
+      log.info(`Game over with winner ${winner}`);
+      server.broadcast('gameover', {winner});
+      server.playerPool.forEach(server.waitPool.add.bind(server.waitPool));
+      server.broadcast('waitList', Array.from(server.waitPool).map(player => player.name || 'no name'));
+      server.start = false;
     }
   }
-  server.broadcast('playerList', Array.from(server.playerPool).map(player => player.id));
 };
 
 exports.name = (server, player, data) => {
   player.name = data.name;
+  server.broadcast('waitList', Array.from(server.waitPool).map(player => player.name || 'no name'));
 };
 
 exports.requireGameStart = (server, player) => {
-  assert(!server.game.started, 'the game has already started');
-  server.game.started = true;
-  log.info('Game start');
+  assert(!server.start, 'Please wait for the end of the last game');
+  server.playerPool = new Set(server.waitPool);
+  server.alivePool = new Set(server.playerPool);
+  server.syncPool = new Map();
+  server.waitPool.clear();
+  server.start = true;
+  log.info(`Game start with ${server.playerPool.size} players`);
   server.broadcast('gameStart');
-  server.alivePlayer = new Set(server.playerPool);
   let players = Array.from(server.playerPool).map(player => {
     return {
       id: player.id,
@@ -68,19 +73,16 @@ exports.requireGameStart = (server, player) => {
   });
 };
 
-exports.sync = (() => {
-  let syncDataPool = new Map();
-  return (server, player, data) => {
-    syncDataPool.set(player.id, data);
-    if (syncDataPool.size === server.playerPool.size) {
-      // all sync-data received
-      server.broadcast('sync', Array.from(syncDataPool).map(([key, value]) => {
-        return {id: key, data: value};
-      }));
-      syncDataPool.clear();
-    }
-  };
-})();
+exports.sync = (server, player, data) => {
+  server.syncPool.set(player.id, data);
+  if (server.syncPool.size === server.playerPool.size) {
+    // all sync-data received
+    server.broadcast('sync', Array.from(server.syncPool).map(([key, value]) => {
+      return {id: key, data: value};
+    }));
+    server.syncPool.clear();
+  }
+};
 
 exports.broadcast = (server, player, data) => {
   data.from = player.id; // add broadcaster info, may be used later
@@ -94,14 +96,15 @@ exports.broadcast = (server, player, data) => {
 
 const broadcastHook = {
   dead (server, player, data) {
-    server.broadcast(data.type, data, player);
-    server.alivePlayer.delete(player);
-    if (server.alivePlayer.size === 1) {
-      // only 1 player left, game over
-      server.broadcast('gameover', {
-        winner: [...server.alivePlayer.values()][0].id
-      });
-      server.game.started = false;
+    server.broadcast('dead', data, player);
+    server.alivePool.delete(player);
+    if (server.alivePool.size === 1) {
+      const winner = [...server.alivePool.values()][0].id;
+      log.info(`Game over with winner ${winner}`);
+      server.broadcast('gameover', {winner});
+      server.playerPool.forEach(server.waitPool.add.bind(server.waitPool));
+      server.broadcast('waitList', Array.from(server.waitPool).map(player => player.name || 'no name'));
+      server.start = false;
     }
   }
 };

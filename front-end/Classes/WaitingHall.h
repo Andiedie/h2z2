@@ -10,6 +10,7 @@ public:
     static cocos2d::Scene* createScene();
 	Size visibleSize;
 	Vec2 origin;
+	Label* error;
 
     virtual bool init();
     

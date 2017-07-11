@@ -38,17 +38,28 @@ bool WaitingHall::init()
     this->visibleSize = Director::getInstance()->getVisibleSize();
     this->origin = Director::getInstance()->getVisibleOrigin();
 
-	GSocket->on("error", [](GameSocket* client, GenericValue<UTF8<>>& data) {
+	GSocket->on("error", [this](GameSocket* client, GenericValue<UTF8<>>& data) {
 		//CCLOG("manual-error: %s", data.GetString());
+		error->setString(data.GetString());
 	});
 
 	auto playerLabel = Label::createWithSystemFont("", "Microsoft YaHei UI", 18);
-	playerLabel->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 50.0f);
-	playerLabel->setString("connecting...");
+	playerLabel->setPosition(visibleSize/2);
+	this->addChild(playerLabel, 1);
 
-	GSocket->on("playerList", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
-		playerLabel->setString("Current player: " + std::to_string(arr.Size()));
+	error = Label::create("", "Microsoft YaHei UI", 28);
+	error->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
+	this->addChild(error);
+
+	GSocket->on("waitList", [=](GameSocket* client, GenericValue<UTF8<>>& arr) {
+		std::string str = std::to_string(arr.Size()) + " players:\n";
+		for (int i = 0; i < arr.Size(); i++) {
+			str += "\n";
+			str += arr[i].GetString();
+		}
+		playerLabel->setString(str);
 	});
+
 	GSocket->on("gameStart", [=](GameSocket* client, GenericValue<UTF8<>>& data) {
 		//CCLOG("game start!");
 		// switch to game scene
@@ -61,9 +72,6 @@ bool WaitingHall::init()
 		GSocket->sendEvent("requireGameStart");
 	});
 	menu->addChild(startGameButton);
-	
-	this->addChild(playerLabel, 1);
-
 	this->addChild(menu, 2);
 
     return true;
