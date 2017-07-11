@@ -11,8 +11,8 @@ exports.login = (server, player) => {
 
 exports.logout = (server, player) => {
   if (server.waitPool.has(player)) {
-    log.info(`player ${player.id} leave waiting hall. ${server.waitPool.size} waiting`);
     server.waitPool.delete(player);
+    log.info(`player ${player.id} leave waiting hall. ${server.waitPool.size} waiting`);
     server.broadcast('waitList', Array.from(server.waitPool).map(player => player.name || 'no name'));
   } else {
     log.info(`player ${player.id} leave game. ${server.playerPool.size} playing`);
