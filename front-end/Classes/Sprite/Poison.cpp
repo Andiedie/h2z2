@@ -20,6 +20,7 @@ DrawNode* Poison::init(Vec2 area) {
 	Poison::leftBottom = Vec2(0, 0);
 	Poison::rightTop = Vec2(area.x, area.y);
 	Poison::rightBottom = Vec2(area.x, 0);
+	Poison::radius = 0;
 	return dn;
 }
 
