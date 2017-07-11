@@ -28,6 +28,9 @@ bool Uzi::fire(bool force) {
 	angle += random(-15, 15);
 	pos += 45.0f * Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
 	scene->addChild(new Bullet(file, pos, damage, player->getRotation(), speed));
+	angle += random(-15, 15);
+	pos += 45.0f * Vec2(sinf(CC_DEGREES_TO_RADIANS(angle)), cosf(CC_DEGREES_TO_RADIANS(angle)));
+	scene->addChild(new Bullet(file, pos, damage, player->getRotation(), speed));
 	this->current = max(0, current - 1);
 	return true;
 }
