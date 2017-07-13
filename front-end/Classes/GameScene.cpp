@@ -142,6 +142,7 @@ bool GameScene::init() {
 			info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
 			uiLayer->addChild(info);
 		}
+		started = false;
 		_eventDispatcher->removeEventListenersForType(EventListener::Type::KEYBOARD);
 		_eventDispatcher->removeEventListenersForType(EventListener::Type::MOUSE);
 		GSocket->removeEventHandler("initData");
@@ -413,9 +414,11 @@ void GameScene::selfDead() {
 	// UI
 	updateDeadLabel("You died!");
 	aliveLabel->setString(to_string(otherPlayers.size()) + " Alive");
-	auto info = Label::create("You Died!", "Arial", 72);
-	info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
-	uiLayer->addChild(info);
+	if (started) {
+		auto info = Label::create("You Died!", "Arial", 72);
+		info->setPosition(visibleSize.width / 2, visibleSize.height - 100.0f);
+		uiLayer->addChild(info);
+	}
 	weaponLabel->setString("");
 	hpLabel->setString("");
 	// 移出键盘监听器
@@ -470,7 +473,7 @@ void GameScene::updateDeadLabel(string msg) {
 	infoLabel->setString(infoLabel->getString() + "\n" + msg);
 	auto size = infoLabel->getContentSize();
 	infoLabel->setPosition(size.width/2+20.0f, size.height/2.0+20.0f);
-	runAction(Sequence::create(DelayTime::create(3.0f), CallFunc::create([this]() {
+	runAction(Sequence::create(DelayTime::create(10.0f), CallFunc::create([this]() {
 		infoLabel->setVisible(false);
 	}), nullptr));
 }
@@ -483,6 +486,7 @@ void GameScene::changeView() {
 	}
 	this->stopActionByTag(FOLLOW_TAG);
 	auto follow = Follow::create(it->second);
+	if (!follow) return;
 	follow->setTag(FOLLOW_TAG);
 	this->runAction(follow);
 	hpLabel->setString("Watching \"" + it->second->name->getString() + "\" (click to change)");
