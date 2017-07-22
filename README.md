@@ -117,8 +117,6 @@ cocos new -l cpp -p com.zyuco.h2z2 front-end
 
 ![](http://ocphk5wc7.bkt.clouddn.com//17-7-22/78506684.jpg)
 
-## 实现
-
 ## 素材来源
 ### 游戏名
 ![](http://ocphk5wc7.bkt.clouddn.com//17-7-22/18607460.jpg)
@@ -131,10 +129,16 @@ cocos new -l cpp -p com.zyuco.h2z2 front-end
 
 玩家的素材来源于游戏[NieR:Automata](http://www.jp.square-enix.com/nierautomata/)的Hacking模式。
 
-![](http://ocphk5wc7.bkt.clouddn.com//17-7-22/46355178.jpg)
-
 ### 声音
 取自Flash游戏[僵尸危机3](http://www.4399.com/flash/5931.htm)
 
-# LICENSE
+## 已知问题
+- 偶尔出现的崩溃与卡顿
+- 中文路径下没有游戏声音
+- 可能出现的武器命中不同步
+- 切换观战对象时可能出现的崩溃
+- 在等待界面直接结束游戏可能出现Socket不中断的错误
+- 高延迟下多个玩家可以同时拾取同一个武器或血包
+
+## LICENSE
 MIT
